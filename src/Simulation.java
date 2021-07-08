@@ -1,33 +1,15 @@
-/**
- * Write a description of class Main here.
- *
- * @author (your name)
- * @version (a version number or a date)
- */
 import javax.swing.*;
 import java.awt.*;
-import java.text.*;
+
 public class Simulation extends JPanel
 {
     private final Person[] people;
-    int timeMax = 200; //the max time that the simulation runs for (these dont have to be user inputs as they are of abetery scale. just use a good value that produces quick, intresting values.)
     private final int P_NUM = 50;
-    private final int FRAME_TIME = 10;  //processing can take up to 10 ms ish 
-    private final DecimalFormat myFormat;
-    
-    
-    //Person movement Variables
-    private double Xpos;
-    private double Ypos;
-    private double Xvel;
-    private double Yvel;
-    private double Xacc;
-    private double Yacc;
-    
+    private static final int FRAME_TIME = 10;  //processing can take up to 10 ms ish
+
     public Simulation()
     {
         people = new Person[P_NUM];
-        myFormat = new DecimalFormat("#.###");
         for(int i=0; i<P_NUM; i++){
             people[i] = new Person();
             Person Person = people[i];
@@ -63,16 +45,16 @@ public class Simulation extends JPanel
                 Person infector = null;
                 Person infectee = null;
 
-                if(people[i].getInfectedness() != 0 && people[j].getInfectedness() == 0 ){
+                if(people[i].getInfectionLevel() != 0 && people[j].getInfectionLevel() == 0 ){
                     infector = people[i];
                     infectee = people[j];
                 }
-                if(people[i].getInfectedness() == 0 && people[j].getInfectedness() != 0 ){
+                if(people[i].getInfectionLevel() == 0 && people[j].getInfectionLevel() != 0 ){
                     infector = people[j];
                     infectee = people[i]; 
                 }
                 if(infector != null){
-                    double distance = Math.sqrt(Math.pow(infector.getXcoord()-infectee.getXcoord(),2)+Math.pow(infector.getYcoord()-infectee.getYcoord(),2));
+                    double distance = Math.sqrt(Math.pow(infector.getXCoordinate()-infectee.getXCoordinate(),2)+Math.pow(infector.getYCoordinate()-infectee.getYCoordinate(),2));
                     if(distance <= people[0].getRadius() + 20){
                         infectee.setInfected();
                     }
@@ -83,47 +65,48 @@ public class Simulation extends JPanel
     }
     private void movePerson(int i){        
         //get the pos and vel of the person this method is moving
-        Xvel = people[i].getXvel();
-        Yvel = people[i].getYvel();
-        Xpos = people[i].getXcoord();
-        Ypos = people[i].getYcoord();
-        double Xbound = people[0].getXbound();  //memory leak?
-        double Ybound = people[0].getYbound();
-        
-        Xacc = 0;
-        Yacc = 0;
+        double xvel = people[i].getXVelocity();
+        double yvel = people[i].getYVelocity();
+        //Person movement Variables
+        double xpos = people[i].getXCoordinate();
+        double ypos = people[i].getYCoordinate();
+        double Xbound = people[0].getXBound();  //memory leak?
+        double Ybound = people[0].getYBound();
+
+        double xacc = 0;
+        double yacc = 0;
         //if statements for wall boundaries 
-        if(people[i].getXcoord()> people[0].getXbound() ){
-            Xacc =+ -2*(1+people[i].getXcoord()-people[0].getXbound());  //the acceleration due to being out of bouncds is a function of how far out it is.
-        }else if(people[i].getXcoord() < 0){
-            Xacc =+ -2*(-1+people[i].getXcoord());
+        if(people[i].getXCoordinate()> people[0].getXBound() ){
+            xacc =+ -2*(1+people[i].getXCoordinate()-people[0].getXBound());  //the acceleration due to being out of bouncds is a function of how far out it is.
+        }else if(people[i].getXCoordinate() < 0){
+            xacc =+ -2*(-1+people[i].getXCoordinate());
         }
-        if(people[i].getYcoord()> people[0].getYbound() ){
-            Yacc =+ -2*(1+people[i].getYcoord()-people[0].getYbound());  //the acceleration due to being out of bouncds is a function of how far out it is.
-        }else if(people[i].getYcoord() < 0){
-            Yacc =+ -2*(-1+people[i].getYcoord());
+        if(people[i].getYCoordinate()> people[0].getYBound() ){
+            yacc =+ -2*(1+people[i].getYCoordinate()-people[0].getYBound());  //the acceleration due to being out of bouncds is a function of how far out it is.
+        }else if(people[i].getYCoordinate() < 0){
+            yacc =+ -2*(-1+people[i].getYCoordinate());
         }
         //avoidance of other people
         
         
         //main acceleration field
-        Xacc += (  Math.sin( 10*Xbound*(Xpos+Xbound/2)-(Ypos+Ybound/2) ) );
+        xacc += (  Math.sin( 10*Xbound*(xpos +Xbound/2)-(ypos +Ybound/2) ) );
         //(sin(15 (x + y)) + 1) / 15 - 0.25 (x - 0.5)
-        Yacc += (  Math.cos( 10*Ybound*(Xpos+Xbound/2)+(Ypos+Ybound/2) ) );
+        yacc += (  Math.cos( 10*Ybound*(xpos +Xbound/2)+(ypos +Ybound/2) ) );
         //(cos(15 (x - y)) + 1) / 15 - 0.25 (y - 0.5)
         
         //drag acting on people, slows them down. (restricts the growth of velocity)
-        Xvel = Xvel*(1-0.05);
-        Yvel = Yvel*(1-0.05);
+        xvel = xvel *(1-0.05);
+        yvel = yvel *(1-0.05);
         //update variable and send back to person
-        Xvel += Xacc;
-        Yvel += Yacc;
-        Xpos += Xvel;
-        Ypos += Yvel;
-        people[i].setXvel(Xvel);
-        people[i].setYvel(Yvel);
-        people[i].setXcoord(Xpos);
-        people[i].setYcoord(Ypos);
+        xvel += xacc;
+        yvel += yacc;
+        xpos += xvel;
+        ypos += yvel;
+        people[i].setXvel(xvel);
+        people[i].setYvel(yvel);
+        people[i].setXcoord(xpos);
+        people[i].setYcoord(ypos);
         
     }
     

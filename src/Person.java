@@ -1,11 +1,3 @@
-
-
-/**
- * Write a description of class Person here.
- *
- * @author (RYAN)
- * @version (Current version)
- */
 import java.util.concurrent.ThreadLocalRandom;
 import javax.swing.*;
 import java.awt.*;
@@ -15,15 +7,12 @@ public class Person extends JComponent
     private double thisYPos; //y Position
     private double thisXVel; //x Velocity
     private double thisYVel; //y Velocity
-    private double infectedness; //value of how infectd a peoson is, 0 = not and then other +ve numebrs are a scale of sickness
+    private double infectionLevel; //value of how infected a person is, 0 = not and then other +ve numbers are a scale of sickness
     private int infectionProgress = 30; //defaults to uninfected value
-    private double resistance;
-    private double virusStrain; 
     
     /**
-     * TODO:
-     * implement resistance, virusStrain and the variable inection chance
-     * have graph anilitics
+     * TODO: implement resistance, virusStrain and the variable inection chance
+     * TODO: have graph analytics
      */
     
     private static final int INFECTION_DURATION = 30;
@@ -41,21 +30,20 @@ public class Person extends JComponent
     }
     public void infectionEvolution(){
         if(infectionProgress<INFECTION_DURATION) { //INFECTION_DURATION is the duration of the infection, if a person is not infected their infection time sits at INFECTION_DURATION
-            infectedness = -0.005 * Math.pow(infectionProgress, 2) + 0.15 * infectionProgress; 
+            infectionLevel = -0.005 * Math.pow(infectionProgress, 2) + 0.15 * infectionProgress;
             infectionProgress ++;
         } else {
-            infectedness = 0;
+            infectionLevel = 0;
         }
     }
-    public double getInfectedness(){ return infectedness; }
-    public int getXbound(){ return X_BOUND_MAX; }
-    public int getYbound(){ return Y_BOUND_MAX; }
-    public double getXvel(){ return thisXVel; }
-    public double getYvel(){ return thisYVel; }
-    public double getXcoord(){ return thisXPos; }
-    public double getYcoord(){ return thisYPos; }       
+    public double getInfectionLevel(){ return infectionLevel; }
+    public int getXBound(){ return X_BOUND_MAX; }
+    public int getYBound(){ return Y_BOUND_MAX; }
+    public double getXVelocity(){ return thisXVel; }
+    public double getYVelocity(){ return thisYVel; }
+    public double getXCoordinate(){ return thisXPos; }
+    public double getYCoordinate(){ return thisYPos; }
     public int getRadius(){ return RADIUS; }
-    public double getMaxInfectedness(){return MAX_INFECTION; }
     
     public void setXvel(double newXvel){ thisXVel = newXvel; }
     public void setYvel(double newYvel){ thisYVel = newYvel; }
@@ -71,7 +59,7 @@ public class Person extends JComponent
             graphics.setColor(Color.blue);
             graphics.fillOval((int) (thisXPos), (int) (thisYPos), RADIUS, RADIUS);
         }
-        graphics.setColor(new Color((int)(255*infectedness/ MAX_INFECTION), (int) (255*(1-infectedness/ MAX_INFECTION)), 0));
+        graphics.setColor(new Color((int)(255* infectionLevel / MAX_INFECTION), (int) (255*(1- infectionLevel / MAX_INFECTION)), 0));
         graphics.fillOval((int) (thisXPos+3), (int) (thisYPos+3), RADIUS-6, RADIUS-6);
     }
     

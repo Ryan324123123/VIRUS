@@ -14,7 +14,7 @@ public class Window extends JFrame
     {
         Simulation sim = new Simulation();
         
-        getContentPane().setPreferredSize(new Dimension(sim.getPerson(0).getXbound()+sim.getPerson(0).getRadius(), sim.getPerson(0).getYbound()+sim.getPerson(0).getRadius()));
+        getContentPane().setPreferredSize(new Dimension(sim.getPerson(0).getXBound()+sim.getPerson(0).getRadius(), sim.getPerson(0).getYBound()+sim.getPerson(0).getRadius()));
         getContentPane().setMinimumSize(new Dimension(640, 480));
         getContentPane().setMaximumSize(new Dimension(1920, 1080));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
