@@ -4,7 +4,7 @@ import java.awt.*;
 public class Simulation extends JPanel
 {
     private final Person[] people;
-    private final int P_NUM = 50;
+    private final int P_NUM = 20;
     private static final int FRAME_TIME = 10;  //processing can take up to 10 ms ish
 
     public Simulation()
@@ -55,7 +55,7 @@ public class Simulation extends JPanel
                 }
                 if(infector != null){
                     double distance = Math.sqrt(Math.pow(infector.getXCoordinate()-infectee.getXCoordinate(),2)+Math.pow(infector.getYCoordinate()-infectee.getYCoordinate(),2));
-                    if(distance <= people[0].getRadius() + 20){
+                    if(distance <= people[0].getRadius()*1.1){
                         infectee.setInfected();
                     }
                 }

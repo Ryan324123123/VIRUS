@@ -1,10 +1,3 @@
-
-/**
- * Write a description of class Windo here.
- *
- * @author (your name)
- * @version (a version number or a date)
- */
 import javax.swing.*;
 import java.awt.*;
 
