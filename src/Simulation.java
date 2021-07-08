@@ -9,7 +9,7 @@ import java.awt.*;
 import java.text.*;
 public class Simulation extends JPanel
 {
-    private Person[] people;
+    private final Person[] people;
     int timeMax = 200; //the max time that the simulation runs for (these dont have to be user inputs as they are of abetery scale. just use a good value that produces quick, intresting values.)
     private final int P_NUM = 50;
     private final int FRAME_TIME = 10;  //processing can take up to 10 ms ish 
