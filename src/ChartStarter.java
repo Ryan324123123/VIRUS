@@ -1,15 +1,16 @@
+/**
 import javax.swing.*;
 public class ChartStarter {
     //THIS IS ALL JUST A STAND-IN FOR YOUR OWN CODE, THE PART YOU ACTUALLY WANT IS ChartExample.
     private double phase;
-    private final ChartExample theChart;
+    private final Graph theChart;
     public static void main(String[] args) {
         new ChartStarter();
     }
     public ChartStarter() {
-        double[] initialX = new double[] {phase + (2 * Math.PI / 1000)};
-        double[] initialY = new double[] {Math.sin(initialX[0])};
-        theChart = new ChartExample("Real-Time XChart", "Radians", "Sine", "sine", initialX, initialY);
+        double initialX = 0;
+        double initialY = 0;
+        theChart = new ChartExample("null", "null", "null", "null", initialX, initialY);
         Timer cycleTimer = new Timer(20, actionEvent -> doACycle());
         cycleTimer.setRepeats(true);
         cycleTimer.start();
@@ -22,3 +23,4 @@ public class ChartStarter {
         theChart.addNewData(xPoint, yPoint);
     }
 }
+**/

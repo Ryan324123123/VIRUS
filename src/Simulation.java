@@ -5,7 +5,9 @@ public class Simulation extends JPanel
 {
     private final Person[] people;
     private final int P_NUM = 20;
-    private static final int FRAME_TIME = 10;  //processing can take up to 10 ms ish
+    private static final int FRAME_TIME = 30;  //processing can take up to 10 ms ish
+    private Graph totalInfectionsGraph;
+    private int cycleCount=0;
 
     public Simulation()
     {
@@ -20,17 +22,20 @@ public class Simulation extends JPanel
         
         setDoubleBuffered(true);
         setLayout(null);
+        totalInfectionsGraph = new Graph("Graph 1", "time(s)", "total infectedness", "total Infected", 0,0);
     }
 
     private void update()
     {
+        double totalVirus = 0;
         for(int i=0; i<P_NUM; i++){
-            //System.out.print(myFormat.format(people[i].getInfectedness()/people[i].getMaxInfectedness())+ "   ");
             people[i].infectionEvolution();
+            totalVirus += people[i].getInfectionLevel();
             movePerson(i);
             Collide();
         }
-        //System.out.println("");
+        cycleCount ++;
+        totalInfectionsGraph.addNewData(cycleCount,totalVirus);
     }
 
     public Person getPerson(int i){

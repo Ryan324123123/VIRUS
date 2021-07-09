@@ -13,12 +13,13 @@ public class Person extends JComponent
     /**
      * TODO: implement resistance, virusStrain and the variable infection chance
      * TODO: have graph analytics
+     * TODO: have debug mode/graph
      */
     
     private static final int INFECTION_DURATION = 30;
     private static final int RADIUS = 30;
     private static final int X_BOUND_MAX = 300;
-    private static final int Y_BOUND_MAX = 300;
+    private static final int Y_BOUND_MAX = 100;
     private static final double MAX_INFECTION = 1.125;
     public Person(){
         thisXPos = ThreadLocalRandom.current().nextDouble(0, X_BOUND_MAX);
