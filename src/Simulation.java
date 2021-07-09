@@ -32,8 +32,8 @@ public class Simulation extends JPanel
             people[i].infectionEvolution();
             totalVirus += people[i].getInfectionLevel();
             movePerson(i);
-            Collide();   //TODO: as this already is being called for each "i" it doesn't also need to be in the collide method
         }
+        Collide();
         cycleCount ++;
         totalInfectionsGraph.addNewData(cycleCount,totalVirus);
     }
@@ -47,7 +47,7 @@ public class Simulation extends JPanel
         //NTS: peoples infection level doesn't start increasing until after they have left their infector
         //pretend that I made it such that two infected people can interact but I then decided that it was sub optimal and so reverted my code
         for(int i = 0; i<P_NUM; i++){
-            for(int j = 0; j<P_NUM; j++){
+            for(int j = i+1; j<P_NUM; j++){
                 Person infector = null;
                 Person infectee = null;
 
