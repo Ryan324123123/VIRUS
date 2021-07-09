@@ -14,10 +14,10 @@ public class Graph {
         wrapper.displayChart();
         this.seriesName = seriesName;
     }
-    //CALL THIS WITH YOUR OTHER THINGS TO ADD DATA TO THE GRAPH
-    public void addNewData(double newDataX, double newDataY) {
-        xData.add(newDataX);
-        yData.add(newDataY);
+
+    public void addNewData(double NewXData, double newYData) {
+        xData.add(NewXData);
+        yData.add(newYData);
         chart.updateXYSeries(seriesName, xData, yData, null);
         wrapper.repaintChart();
     }

@@ -4,9 +4,9 @@ import java.awt.*;
 public class Simulation extends JPanel
 {
     private final Person[] people;
-    private final int P_NUM = 20;
-    private static final int FRAME_TIME = 30;  //processing can take up to 10 ms ish
-    private Graph totalInfectionsGraph;
+    private static final int P_NUM = 100;
+    private static final int FRAME_TIME = 20;  //processing can take from 0 - 25 ms ish depending on some parameters
+    private final Graph totalInfectionsGraph;
     private int cycleCount=0;
 
     public Simulation()
@@ -32,7 +32,7 @@ public class Simulation extends JPanel
             people[i].infectionEvolution();
             totalVirus += people[i].getInfectionLevel();
             movePerson(i);
-            Collide();
+            Collide();   //TODO: as this already is being called for each "i" it doesn't also need to be in the collide method
         }
         cycleCount ++;
         totalInfectionsGraph.addNewData(cycleCount,totalVirus);
@@ -44,9 +44,10 @@ public class Simulation extends JPanel
     
     private void Collide()
     {
+        //NTS: peoples infection level doesn't start increasing until after they have left their infector
         //pretend that I made it such that two infected people can interact but I then decided that it was sub optimal and so reverted my code
         for(int i = 0; i<P_NUM; i++){
-            for(int j = i+1; j<P_NUM; j++){
+            for(int j = 0; j<P_NUM; j++){
                 Person infector = null;
                 Person infectee = null;
 
@@ -64,54 +65,53 @@ public class Simulation extends JPanel
                         infectee.setInfected();
                     }
                 }
-
             }
         }
     }
     private void movePerson(int i){        
         //get the pos and vel of the person this method is moving
-        double xvel = people[i].getXVelocity();
-        double yvel = people[i].getYVelocity();
+        double xVel = people[i].getXVelocity();
+        double yVel = people[i].getYVelocity();
         //Person movement Variables
-        double xpos = people[i].getXCoordinate();
-        double ypos = people[i].getYCoordinate();
-        double Xbound = people[0].getXBound();  //memory leak?
-        double Ybound = people[0].getYBound();
+        double xPos = people[i].getXCoordinate();
+        double yPos = people[i].getYCoordinate();
+        double xBound = people[0].getXBound();  //memory leak?
+        double yBound = people[0].getYBound();
 
-        double xacc = 0;
-        double yacc = 0;
-        //if statements for wall boundaries 
+        double xAcc = 0;
+        double yAcc = 0;
+        //if statements for wall boundaries //
         if(people[i].getXCoordinate()> people[0].getXBound() ){
-            xacc =+ -2*(1+people[i].getXCoordinate()-people[0].getXBound());  //the acceleration due to being out of bouncds is a function of how far out it is.
+            xAcc =+ -2*(1+people[i].getXCoordinate()-people[0].getXBound());  //the acceleration due to being out of bounds is a function of how far out it is.
         }else if(people[i].getXCoordinate() < 0){
-            xacc =+ -2*(-1+people[i].getXCoordinate());
+            xAcc =+ -2*(-1+people[i].getXCoordinate());
         }
         if(people[i].getYCoordinate()> people[0].getYBound() ){
-            yacc =+ -2*(1+people[i].getYCoordinate()-people[0].getYBound());  //the acceleration due to being out of bouncds is a function of how far out it is.
+            yAcc =+ -2*(1+people[i].getYCoordinate()-people[0].getYBound());  //the acceleration due to being out of bounds is a function of how far out it is.
         }else if(people[i].getYCoordinate() < 0){
-            yacc =+ -2*(-1+people[i].getYCoordinate());
+            yAcc =+ -2*(-1+people[i].getYCoordinate());
         }
-        //avoidance of other people
+        //avoidance of other people//
         
         
-        //main acceleration field
-        xacc += (  Math.sin( 10*Xbound*(xpos +Xbound/2)-(ypos +Ybound/2) ) );
-        //(sin(15 (x + y)) + 1) / 15 - 0.25 (x - 0.5)
-        yacc += (  Math.cos( 10*Ybound*(xpos +Xbound/2)+(ypos +Ybound/2) ) );
-        //(cos(15 (x - y)) + 1) / 15 - 0.25 (y - 0.5)
-        
+        //main acceleration field//
+        xAcc += (  Math.sin( xBound*(xPos +xBound/2)-(yPos +yBound/2) ) );
+        yAcc += (  Math.cos( yBound*(xPos +xBound/2)+(yPos +yBound/2) ) );
+
+
         //drag acting on people, slows them down. (restricts the growth of velocity)
-        xvel = xvel *(1-0.05);
-        yvel = yvel *(1-0.05);
+        xVel = xVel *(1-0.03);
+        yVel = yVel *(1-0.03);
+
         //update variable and send back to person
-        xvel += xacc;
-        yvel += yacc;
-        xpos += xvel;
-        ypos += yvel;
-        people[i].setXvel(xvel);
-        people[i].setYvel(yvel);
-        people[i].setXcoord(xpos);
-        people[i].setYcoord(ypos);
+        xVel += xAcc;
+        yVel += yAcc;
+        xPos += xVel;
+        yPos += yVel;
+        people[i].setXVel(xVel);
+        people[i].setYVel(yVel);
+        people[i].setXCoordinate(xPos);
+        people[i].setYCoordinate(yPos);
         
     }
     

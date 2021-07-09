@@ -1,25 +1,32 @@
 import java.util.concurrent.ThreadLocalRandom;
 import javax.swing.*;
 import java.awt.*;
+
+
+/**
+ * TODO: implement resistance, virusStrain and the variable infection chance
+ * TODO: have graph analytics
+ * TODO: have debug mode/graph
+ * ^^^ the increase in sim time could be due to collide re checking. To be sure look at how the number of infections
+ * determines how slow the program runs. a possible fix is to check distance before infection
+ * TODO: have user input for various variables
+ *
+ */
+
+
 public class Person extends JComponent
 {
     private double thisXPos; //x Position
     private double thisYPos; //y Position
     private double thisXVel; //x Velocity
     private double thisYVel; //y Velocity
-    private double infectionLevel; //value of how infected a person is, 0 = not and then other +ve numbers are a scale of sickness
-    private int infectionProgress = 30; //defaults to uninfected value
-    
-    /**
-     * TODO: implement resistance, virusStrain and the variable infection chance
-     * TODO: have graph analytics
-     * TODO: have debug mode/graph
-     */
-    
+    private double infectionLevel = 0; //value of how infected a person is, 0 = not and then other +ve numbers are a scale of sickness
+    private int infectionProgress = INFECTION_DURATION; //defaults to uninfected value which is the duration of an infection
+
     private static final int INFECTION_DURATION = 30;
     private static final int RADIUS = 30;
-    private static final int X_BOUND_MAX = 300;
-    private static final int Y_BOUND_MAX = 100;
+    private static final int X_BOUND_MAX = 700;
+    private static final int Y_BOUND_MAX = 400;
     private static final double MAX_INFECTION = 1.125;
     public Person(){
         thisXPos = ThreadLocalRandom.current().nextDouble(0, X_BOUND_MAX);
@@ -37,19 +44,18 @@ public class Person extends JComponent
             infectionLevel = 0;
         }
     }
-    public double getInfectionLevel(){ return infectionLevel; }
     public int getXBound(){ return X_BOUND_MAX; }
     public int getYBound(){ return Y_BOUND_MAX; }
+    public int getRadius(){ return RADIUS; }
+    public double getInfectionLevel(){ return infectionLevel; }
     public double getXVelocity(){ return thisXVel; }
     public double getYVelocity(){ return thisYVel; }
     public double getXCoordinate(){ return thisXPos; }
     public double getYCoordinate(){ return thisYPos; }
-    public int getRadius(){ return RADIUS; }
-    
-    public void setXvel(double newXvel){ thisXVel = newXvel; }
-    public void setYvel(double newYvel){ thisYVel = newYvel; }
-    public void setXcoord(double newXPos){ thisXPos = newXPos; }
-    public void setYcoord(double newYPos){ thisYPos = newYPos; }    
+    public void setXVel(double newXVel){ thisXVel = newXVel; }
+    public void setYVel(double newYVel){ thisYVel = newYVel; }
+    public void setXCoordinate(double newXPos){ thisXPos = newXPos; }
+    public void setYCoordinate(double newYPos){ thisYPos = newYPos; }
     
     
     public void paintComponent(Graphics graphics)
