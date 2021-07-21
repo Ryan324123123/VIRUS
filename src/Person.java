@@ -1,4 +1,3 @@
-import java.util.concurrent.ThreadLocalRandom;
 import javax.swing.*;
 import java.awt.*;
 
@@ -23,14 +22,8 @@ public class Person extends JComponent
 
     private static final int INFECTION_DURATION = 30;
     private static final int RADIUS = 30;
-    private static final int X_BOUND_MAX = 700;
-    private static final int Y_BOUND_MAX = 400;
     private static final double MAX_INFECTION = 1.125;
-    public Person(){
-        thisXPos = ThreadLocalRandom.current().nextDouble(0, X_BOUND_MAX);
-        thisYPos = ThreadLocalRandom.current().nextDouble(0, Y_BOUND_MAX);
-        
-    }
+
     public void setInfected(){
         infectionProgress = 0;
     }
@@ -42,8 +35,6 @@ public class Person extends JComponent
             infectionLevel = 0;
         }
     }
-    public int getXBound(){ return X_BOUND_MAX; }
-    public int getYBound(){ return Y_BOUND_MAX; }
     public int getRadius(){ return RADIUS; }
     public double getInfectionLevel(){ return infectionLevel; }
     public double getXVelocity(){ return thisXVel; }

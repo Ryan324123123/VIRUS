@@ -1,27 +1,28 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.Scanner;
 
-
-@SuppressWarnings("SpellCheckingInspection")
 public class Simulation extends JPanel
 {
-
-    Scanner userInput = new Scanner(System.in);
     private final Person[] people;
     private final int P_NUM;
     private static final int FRAME_TIME = 20;  //processing can take from 0 - 25 ms ish depending on some parameters
     private final Graph totalInfectionsGraph;
     private int cycleCount=0;
-
+    private final int X_BOUND_MAX=500;
+    private final int Y_BOUND_MAX=450;
     public Simulation()
     {
+        Scanner userInput = new Scanner(System.in);
         System.out.println("enter the population density you want");
-        //by using population density, calculate the amount of people to simulate for.
-        P_NUM = userInput.nextInt();
+        //by using population density, calculate the amount of people to simulate for
+        P_NUM = Math.floorDiv(userInput.nextInt()*X_BOUND_MAX*Y_BOUND_MAX, 8001); //must always divide by an even number
         people = new Person[P_NUM];
         for(int i=0; i<P_NUM; i++){
             people[i] = new Person();
+            people[i].setXCoordinate(ThreadLocalRandom.current().nextDouble(0, X_BOUND_MAX));
+            people[i].setYCoordinate(ThreadLocalRandom.current().nextDouble(0, Y_BOUND_MAX));
             Person Person = people[i];
             add(Person);
         }
@@ -32,6 +33,7 @@ public class Simulation extends JPanel
         setLayout(null);
         totalInfectionsGraph = new Graph("Graph 1", "time(s)", "total infectedness", "total Infected", 0,0);
     }
+    public Person getPerson(int i){return people[i];}
 
     private void update()
     {
@@ -46,10 +48,7 @@ public class Simulation extends JPanel
         totalInfectionsGraph.addNewData(cycleCount,totalVirus);
     }
 
-    public Person getPerson(int i){
-        return people[i];
-    }
-    
+
     private void Collide()
     {
         //NTS: peoples infection level doesn't start increasing until after they have left their infector
@@ -83,28 +82,26 @@ public class Simulation extends JPanel
         //Person movement Variables
         double xPos = people[i].getXCoordinate();
         double yPos = people[i].getYCoordinate();
-        double xBound = people[0].getXBound();  //memory leak?
-        double yBound = people[0].getYBound();
 
         double xAcc = 0;
         double yAcc = 0;
         //if statements for wall boundaries //
-        if(people[i].getXCoordinate()> people[0].getXBound() ){
-            xAcc =+ -2*(1+people[i].getXCoordinate()-people[0].getXBound());  //the acceleration due to being out of bounds is a function of how far out it is.
+        if(people[i].getXCoordinate()> X_BOUND_MAX ){
+            xAcc =+ -2*(1+people[i].getXCoordinate()-X_BOUND_MAX);  //the acceleration due to being out of bounds is a function of how far out it is.
         }else if(people[i].getXCoordinate() < 0){
             xAcc =+ -2*(-1+people[i].getXCoordinate());
         }
-        if(people[i].getYCoordinate()> people[0].getYBound() ){
-            yAcc =+ -2*(1+people[i].getYCoordinate()-people[0].getYBound());  //the acceleration due to being out of bounds is a function of how far out it is.
+        if(people[i].getYCoordinate()> Y_BOUND_MAX){
+            yAcc =+ -2*(1+people[i].getYCoordinate()-Y_BOUND_MAX);  //the acceleration due to being out of bounds is a function of how far out it is.
         }else if(people[i].getYCoordinate() < 0){
             yAcc =+ -2*(-1+people[i].getYCoordinate());
         }
         //avoidance of other people//
-        
-        
+
+
         //main acceleration field//
-        xAcc += (  Math.sin( xBound*(xPos +xBound/2)-(yPos +yBound/2) ) );
-        yAcc += (  Math.cos( yBound*(xPos +xBound/2)+(yPos +yBound/2) ) );
+        xAcc += (  Math.sin( X_BOUND_MAX*(xPos +X_BOUND_MAX/2)-(yPos +Y_BOUND_MAX/2) ) );
+        yAcc += (  Math.cos( Y_BOUND_MAX*(xPos +X_BOUND_MAX/2)+(yPos +Y_BOUND_MAX/2) ) );
 
 
         //drag acting on people, slows them down. (restricts the growth of velocity)
@@ -122,7 +119,8 @@ public class Simulation extends JPanel
         people[i].setYCoordinate(yPos);
         
     }
-    
+    public int getX_BOUND_MAX(){return X_BOUND_MAX;}
+    public int getY_BOUND_MAX(){return Y_BOUND_MAX;}
     
     public void paintComponent(Graphics graphics)
     {
