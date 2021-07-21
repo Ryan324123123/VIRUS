@@ -2,9 +2,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import javax.swing.*;
 import java.awt.*;
 
-
 /**
- * TODO: implement resistance, virusStrain and the variable infection chance
+ * TODO: variable infection chance
  * TODO: have graph analytics
  * TODO: have debug mode/graph
  * ^^^ the increase in sim time could be due to collide re checking. To be sure look at how the number of infections
@@ -12,7 +11,6 @@ import java.awt.*;
  * TODO: have user input for various variables
  *
  */
-
 
 public class Person extends JComponent
 {

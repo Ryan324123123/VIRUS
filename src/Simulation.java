@@ -1,16 +1,24 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.Scanner;
 
+
+@SuppressWarnings("SpellCheckingInspection")
 public class Simulation extends JPanel
 {
+
+    Scanner userInput = new Scanner(System.in);
     private final Person[] people;
-    private static final int P_NUM = 100;
+    private final int P_NUM;
     private static final int FRAME_TIME = 20;  //processing can take from 0 - 25 ms ish depending on some parameters
     private final Graph totalInfectionsGraph;
     private int cycleCount=0;
 
     public Simulation()
     {
+        System.out.println("enter the population density you want");
+        //by using population density, calculate the amount of people to simulate for.
+        P_NUM = userInput.nextInt();
         people = new Person[P_NUM];
         for(int i=0; i<P_NUM; i++){
             people[i] = new Person();

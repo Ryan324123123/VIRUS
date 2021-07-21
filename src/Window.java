@@ -12,8 +12,8 @@ public class Window extends JFrame
         getContentPane().setMaximumSize(new Dimension(1920, 1080));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        //add itmes
-        add(sim);  // the order that items are added will detimine the rendering order
+        //add items
+        add(sim);  // the order that items are added will determine the rendering order
 
         pack();
         toFront();
