@@ -5,7 +5,6 @@ public class Window extends JFrame
 {
     public Window()
     {
-
         Simulation sim = new Simulation();
         
         getContentPane().setPreferredSize(new Dimension(sim.getX_BOUND_MAX()+sim.getPerson(0).getRadius(), sim.getY_BOUND_MAX()+sim.getPerson(0).getRadius()));

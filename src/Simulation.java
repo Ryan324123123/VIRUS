@@ -14,11 +14,19 @@ public class Simulation extends JPanel
     private final int Y_BOUND_MAX=450;
     public Simulation()
     {
-        Scanner userInput = new Scanner(System.in);
-        System.out.println("enter the population density you want");
-        //by using population density, calculate the amount of people to simulate for
-        P_NUM = Math.floorDiv(userInput.nextInt()*X_BOUND_MAX*Y_BOUND_MAX, 8001); //must always divide by an even number
+        Scanner commandLineInput = new Scanner(System.in);
+        System.out.println("enter the population density you want (1 is the least, 10 is the max.)");
+        //by using population density, calculate the amount of people to simulate for.
+        //while the userInput is not in the 1-10 range, keep asking for the input.
+        int userInput = commandLineInput.nextInt();
+        while(userInput<0 || userInput>10){ //todo: input of 0 or a causes error, 11 triggers the ask again, fix.
+            System.out.println("Invalid input, the range for population density is 1 - 10. Try again.");
+            userInput = commandLineInput.nextInt();
+        }
+        P_NUM = Math.floorDiv(userInput*X_BOUND_MAX*Y_BOUND_MAX, 20000);
+
         people = new Person[P_NUM];
+        System.out.println(P_NUM);
         for(int i=0; i<P_NUM; i++){
             people[i] = new Person();
             people[i].setXCoordinate(ThreadLocalRandom.current().nextDouble(0, X_BOUND_MAX));
@@ -139,7 +147,7 @@ public class Simulation extends JPanel
         } catch (InterruptedException error){
             error.printStackTrace();
         }
-        System.out.println(processingTime);
+        System.out.println(processingTime+" "+(FRAME_TIME-processingTime));
         repaint();
     }
 }
