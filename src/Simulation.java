@@ -12,19 +12,32 @@ public class Simulation extends JPanel
     private int cycleCount=0;
     private final int X_BOUND_MAX=500;
     private final int Y_BOUND_MAX=450;
+    private final double infectChance;
     public Simulation()
     {
         Scanner commandLineInput = new Scanner(System.in);
-        System.out.println("enter the population density you want (1 is the least, 10 is the max.)");
         //by using population density, calculate the amount of people to simulate for.
         //while the userInput is not in the 1-10 range, keep asking for the input.
-        int userInput = commandLineInput.nextInt();
-        while(userInput<0 || userInput>10){ //todo: input of 0 or a causes error, 11 triggers the ask again, fix.
-            System.out.println("Invalid input, the range for population density is 1 - 10. Try again.");
-            userInput = commandLineInput.nextInt();
-        }
-        P_NUM = Math.floorDiv(userInput*X_BOUND_MAX*Y_BOUND_MAX, 20000);
+        int userInputInt;
+        boolean loopAgain;
+        System.out.println("enter the population density you want (1 is the least, 10 is the max.)");
+        do {
+            loopAgain=true;
 
+            while(!commandLineInput.hasNextInt()){ //this catches non-integer values
+                System.out.println("Invalid input, please enter an integer between 1 - 10.");
+                commandLineInput.next();
+            }
+            userInputInt=commandLineInput.nextInt();
+            if(userInputInt<=10 && userInputInt>0){
+                loopAgain = false;
+            }else{
+                System.out.println("Invalid input, please enter an integer between 1 - 10.");
+            }
+        }while(loopAgain);
+
+
+        P_NUM = Math.floorDiv(userInputInt*X_BOUND_MAX*Y_BOUND_MAX,20000);
         people = new Person[P_NUM];
         System.out.println(P_NUM);
         for(int i=0; i<P_NUM; i++){
@@ -36,10 +49,28 @@ public class Simulation extends JPanel
         }
         people[0].setInfected();
         people[1].setInfected();
+
+        double userInputDouble;
+        System.out.println("enter a decimal between 0 and 1. 0 is 0% and 1 is 100% infection rate");
+        do {
+            loopAgain=true;
+            while(!commandLineInput.hasNextDouble()){ //this catches non-integer values
+                System.out.println("Invalid input, please enter a decimal between 0 - 1.");
+                commandLineInput.next();
+            }
+            userInputDouble=commandLineInput.nextInt();
+            if(userInputDouble<=1 && userInputDouble>0){
+                loopAgain = false;
+            }else {
+                System.out.println("Invalid input, please enter a decimal between 0 - 1.");
+            }
+        }while(loopAgain);
+        infectChance = userInputDouble;
+
         
         setDoubleBuffered(true);
         setLayout(null);
-        totalInfectionsGraph = new Graph("Graph 1", "time(s)", "total infectedness", "total Infected", 0,0);
+        totalInfectionsGraph = new Graph("Graph 1", "time(s)", "total infection amount", "total Infected", 0,0);
     }
     public Person getPerson(int i){return people[i];}
 
@@ -77,7 +108,10 @@ public class Simulation extends JPanel
                 if(infector != null){
                     double distance = Math.sqrt(Math.pow(infector.getXCoordinate()-infectee.getXCoordinate(),2)+Math.pow(infector.getYCoordinate()-infectee.getYCoordinate(),2));
                     if(distance <= people[0].getRadius()*1.1){
-                        infectee.setInfected();
+                        double infectDecider = ThreadLocalRandom.current().nextDouble(0, 1);
+                        if(infectDecider < infectChance) {
+                            infectee.setInfected();
+                        }
                     }
                 }
             }
