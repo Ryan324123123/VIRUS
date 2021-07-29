@@ -10,20 +10,39 @@ public class Simulation extends JPanel
     private static final int FRAME_TIME = 20;  //processing can take from 0 - 25 ms ish depending on some parameters
     private final Graph totalInfectionsGraph;
     private int cycleCount=0;
-    private final int X_BOUND_MAX=500;
-    private final int Y_BOUND_MAX=450;
+    private final int X_BOUND_MAX=500;  //next step is to have this work for other screens. (take in screen size)
+    private final int Y_BOUND_MAX=500;
     private final double infectChance;
     public Simulation()
     {
         Scanner commandLineInput = new Scanner(System.in);
-        //by using population density, calculate the amount of people to simulate for.
-        //while the userInput is not in the 1-10 range, keep asking for the input.
+        //these three variables are used for userInput checking
         int userInputInt;
+        double userInputDouble;
         boolean loopAgain;
-        System.out.println("enter the population density you want (1 is the least, 10 is the max.)");
+
+        //by getting the area they wish to simulate I can then scale the people to fit so they are the correct corresponding size.
+        System.out.println("Enter the open space area that you wish to simulate (250,000 is normal)");
         do {
             loopAgain=true;
+            while(!commandLineInput.hasNextInt()){ //this catches non-integer values
+                System.out.println("Invalid input, please enter a value less than ___.");
+                commandLineInput.next();
+            }
+            userInputInt=commandLineInput.nextInt();
+            if(userInputInt>0){
+                loopAgain = false;
+            }else{
+                System.out.println("Invalid input, please enter a value less than 10000");
+            }
+        }while(loopAgain);
+        double scaleFactor = 500/Math.sqrt(userInputInt); //this gets passed to each person to scale how large they are in the window
 
+        //by using population density, calculate the amount of people to simulate for.
+        //while the userInput is not in the 1-10 range, keep asking for the input.
+        System.out.println("Enter the population density you want (1 is the least, 10 is the max.)");
+        do {
+            loopAgain=true;
             while(!commandLineInput.hasNextInt()){ //this catches non-integer values
                 System.out.println("Invalid input, please enter an integer between 1 - 10.");
                 commandLineInput.next();
@@ -37,11 +56,11 @@ public class Simulation extends JPanel
         }while(loopAgain);
 
 
-        P_NUM = Math.floorDiv(userInputInt*X_BOUND_MAX*Y_BOUND_MAX,20000);
+        P_NUM = (int) ((userInputInt*X_BOUND_MAX*Y_BOUND_MAX) / (20000*scaleFactor));
         people = new Person[P_NUM];
         System.out.println(P_NUM);
         for(int i=0; i<P_NUM; i++){
-            people[i] = new Person();
+            people[i] = new Person(scaleFactor);
             people[i].setXCoordinate(ThreadLocalRandom.current().nextDouble(0, X_BOUND_MAX));
             people[i].setYCoordinate(ThreadLocalRandom.current().nextDouble(0, Y_BOUND_MAX));
             Person Person = people[i];
@@ -50,7 +69,7 @@ public class Simulation extends JPanel
         people[0].setInfected();
         people[1].setInfected();
 
-        double userInputDouble;
+
         System.out.println("enter a decimal between 0 and 1. 0 is 0% and 1 is 100% infection rate");
         do {
             loopAgain=true;
@@ -58,7 +77,7 @@ public class Simulation extends JPanel
                 System.out.println("Invalid input, please enter a decimal between 0 - 1.");
                 commandLineInput.next();
             }
-            userInputDouble=commandLineInput.nextInt();
+            userInputDouble=commandLineInput.nextDouble();
             if(userInputDouble<=1 && userInputDouble>0){
                 loopAgain = false;
             }else {
@@ -127,26 +146,27 @@ public class Simulation extends JPanel
 
         double xAcc = 0;
         double yAcc = 0;
-        //if statements for wall boundaries //
-        if(people[i].getXCoordinate()> X_BOUND_MAX ){
-            xAcc =+ -2*(1+people[i].getXCoordinate()-X_BOUND_MAX);  //the acceleration due to being out of bounds is a function of how far out it is.
-        }else if(people[i].getXCoordinate() < 0){
-            xAcc =+ -2*(-1+people[i].getXCoordinate());
-        }
-        if(people[i].getYCoordinate()> Y_BOUND_MAX){
-            yAcc =+ -2*(1+people[i].getYCoordinate()-Y_BOUND_MAX);  //the acceleration due to being out of bounds is a function of how far out it is.
-        }else if(people[i].getYCoordinate() < 0){
-            yAcc =+ -2*(-1+people[i].getYCoordinate());
-        }
-        //avoidance of other people//
 
+        //if statements for wall boundaries //
+        if(xPos> X_BOUND_MAX ){
+            xAcc =+ -2*(1+xPos-X_BOUND_MAX);  //the acceleration due to being out of bounds is a function of how far out it is.
+        }else if(xPos < 0){
+            xAcc =+ -2*(-1+xPos);
+        }
+        if(yPos > Y_BOUND_MAX){
+            yAcc =+ -2*(1+yPos-Y_BOUND_MAX);  //the acceleration due to being out of bounds is a function of how far out it is.
+        }else if(yPos < 0){
+            yAcc =+ -2*(-1+yPos);
+        }
+
+        //avoidance of other people//
+        //yet to implement
 
         //main acceleration field//
-        xAcc += (  Math.sin( X_BOUND_MAX*(xPos +X_BOUND_MAX/2)-(yPos +Y_BOUND_MAX/2) ) );
-        yAcc += (  Math.cos( Y_BOUND_MAX*(xPos +X_BOUND_MAX/2)+(yPos +Y_BOUND_MAX/2) ) );
+        xAcc += (  Math.sin( X_BOUND_MAX*(xPos +X_BOUND_MAX/2d)-(yPos +Y_BOUND_MAX/2d) ) ); //2d to use floating point division
+        yAcc += (  Math.cos( Y_BOUND_MAX*(xPos +X_BOUND_MAX/2d)+(yPos +Y_BOUND_MAX/2d) ) );
 
-
-        //drag acting on people, slows them down. (restricts the growth of velocity)
+        //drag acting on people, slows them down. (restricts the growth of velocity)//
         xVel = xVel *(1-0.03);
         yVel = yVel *(1-0.03);
 

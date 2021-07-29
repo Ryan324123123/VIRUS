@@ -1,16 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * TODO: variable infection chance
- * TODO: have graph analytics
- * TODO: have debug mode/graph
- * ^^^ the increase in sim time could be due to collide re checking. To be sure look at how the number of infections
- * determines how slow the program runs. a possible fix is to check distance before infection
- * TODO: have user input for various variables
- *
- */
-
 public class Person extends JComponent
 {
     private double thisXPos; //x Position
@@ -19,10 +9,15 @@ public class Person extends JComponent
     private double thisYVel; //y Velocity
     private double infectionLevel = 0; //value of how infected a person is, 0 = not and then other +ve numbers are a scale of sickness
     private int infectionProgress = INFECTION_DURATION; //defaults to uninfected value which is the duration of an infection
-
+    private final double scaleFactor;
     private static final int INFECTION_DURATION = 30;
     private static final int RADIUS = 30;
     private static final double MAX_INFECTION = 1.125;
+    private static final double infectionBandWidth = 6;
+
+    public Person(double scaleFactor){
+        this.scaleFactor = scaleFactor;
+    }
 
     public void setInfected(){
         infectionProgress = 0;
@@ -35,7 +30,7 @@ public class Person extends JComponent
             infectionLevel = 0;
         }
     }
-    public int getRadius(){ return RADIUS; }
+    public double getRadius(){ return RADIUS*scaleFactor; }
     public double getInfectionLevel(){ return infectionLevel; }
     public double getXVelocity(){ return thisXVel; }
     public double getYVelocity(){ return thisYVel; }
@@ -53,10 +48,10 @@ public class Person extends JComponent
         setLocation((int) (thisXPos * 100), (int) (thisYPos * 100));
         if(infectionProgress != 30){
             graphics.setColor(Color.blue);
-            graphics.fillOval((int) (thisXPos), (int) (thisYPos), RADIUS, RADIUS);
+            graphics.fillOval((int) (thisXPos), (int) (thisYPos), (int) (RADIUS*scaleFactor), (int) (RADIUS*scaleFactor));
         }
         graphics.setColor(new Color((int)(255* infectionLevel / MAX_INFECTION), (int) (255*(1- infectionLevel / MAX_INFECTION)), 0));
-        graphics.fillOval((int) (thisXPos+3), (int) (thisYPos+3), RADIUS-6, RADIUS-6);
+        graphics.fillOval((int) (thisXPos+infectionBandWidth*scaleFactor*0.5), (int) (thisYPos+infectionBandWidth*scaleFactor*0.5), (int) ((RADIUS-infectionBandWidth)*scaleFactor), (int) ((RADIUS-infectionBandWidth)*scaleFactor));
     }
     
     
