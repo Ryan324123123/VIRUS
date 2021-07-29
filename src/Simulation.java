@@ -10,11 +10,16 @@ public class Simulation extends JPanel
     private static final int FRAME_TIME = 20;  //processing can take from 0 - 25 ms ish depending on some parameters
     private final Graph totalInfectionsGraph;
     private int cycleCount=0;
-    private final int X_BOUND_MAX=500;  //next step is to have this work for other screens. (take in screen size)
+    private final int X_BOUND_MAX=500;  //todo: next step is to have this work for any given window its put in. (adds resize compatibility)
     private final int Y_BOUND_MAX=500;
     private final double infectChance;
     public Simulation()
     {
+        setLayout(new GridLayout(1,2));
+        JPanel motionSpace = new JPanel();
+        motionSpace.setLayout(null);
+        add(motionSpace);
+
         Scanner commandLineInput = new Scanner(System.in);
         //these three variables are used for userInput checking
         int userInputInt;
@@ -64,7 +69,7 @@ public class Simulation extends JPanel
             people[i].setXCoordinate(ThreadLocalRandom.current().nextDouble(0, X_BOUND_MAX));
             people[i].setYCoordinate(ThreadLocalRandom.current().nextDouble(0, Y_BOUND_MAX));
             Person Person = people[i];
-            add(Person);
+            motionSpace.add(Person);  //people gat added to the JPanel that is for the motion of the people.
         }
         people[0].setInfected();
         people[1].setInfected();
