@@ -7,7 +7,7 @@ public class Simulation extends JPanel
 {
     private final Person[] people;
     private final int P_NUM;
-    private static final int FRAME_TIME = 20;  //processing can take from 0 - 25 ms ish depending on some parameters
+    private static final int FRAME_TIME = 10;  //processing can take from 0 - 25 ms ish depending on some parameters
     private final Graph totalInfectionsGraph;
     private int cycleCount=0;
     private final int X_BOUND_MAX=500;  //todo: next step is to have this work for any given window its put in. (adds resize compatibility)
@@ -153,13 +153,13 @@ public class Simulation extends JPanel
         double yAcc = 0;
 
         //if statements for wall boundaries //
-        if(xPos> X_BOUND_MAX ){
-            xAcc =+ -2*(1+xPos-X_BOUND_MAX);  //the acceleration due to being out of bounds is a function of how far out it is.
+        if(xPos> X_BOUND_MAX-people[i].getRadius()){
+            xAcc =+ -2*(1+xPos-X_BOUND_MAX+people[i].getRadius());  //the acceleration due to being out of bounds is a function of how far out it is.
         }else if(xPos < 0){
             xAcc =+ -2*(-1+xPos);
         }
-        if(yPos > Y_BOUND_MAX){
-            yAcc =+ -2*(1+yPos-Y_BOUND_MAX);  //the acceleration due to being out of bounds is a function of how far out it is.
+        if(yPos > Y_BOUND_MAX-people[i].getRadius()){
+            yAcc =+ -2*(1+yPos-Y_BOUND_MAX+people[i].getRadius());  //the acceleration due to being out of bounds is a function of how far out it is.
         }else if(yPos < 0){
             yAcc =+ -2*(-1+yPos);
         }
@@ -208,5 +208,6 @@ public class Simulation extends JPanel
         }
         System.out.println(processingTime+" "+(FRAME_TIME-processingTime));
         repaint();
+
     }
 }
