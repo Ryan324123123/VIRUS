@@ -5,7 +5,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class GraphDisplayingCode extends JPanel {
+public class GraphManager extends JPanel {
     private final XYChart graph;
     private final ArrayList<DataSeries> arrayOfSeries = new ArrayList<>();
 
@@ -24,9 +24,9 @@ public class GraphDisplayingCode extends JPanel {
         }
     }
 
-    public GraphDisplayingCode(String name, String XAxisTitle, String YAxisTitle) {
+    public GraphManager(String title, String XAxisTitle, String YAxisTitle) {
         graph=new XYChart(1,1);
-        graph.setTitle(name);
+        graph.setTitle(title);
         graph.setXAxisTitle(XAxisTitle);
         graph.setYAxisTitle(YAxisTitle);
         setLayout(new GridLayout(1,1));
@@ -34,10 +34,18 @@ public class GraphDisplayingCode extends JPanel {
     }
     public void addSeries(double initX, double initY, String seriesName){
         arrayOfSeries.add(new DataSeries(initX, initY, seriesName));
+        graph.addSeries(seriesName, new double[]{initX}, new double[]{initY});
     }
-    public void addData(){
-
-
+    public void addData(String seriesName, double nextX, double nextY ){
+        for (DataSeries dataSeries : arrayOfSeries) { //enhanced for loop for nicer code, dataSeries is the identifier for the particular one we are looking at, at any moment.
+            if (dataSeries.nameOfSeries.equals(seriesName)) {
+                dataSeries.addDataPoint(nextX, nextY);
+                graph.updateXYSeries(seriesName, dataSeries.xData, dataSeries.yData, null);
+                break; //once the match has been made, don't check the others.
+            } else {
+                System.out.println("impossible condition reached. Oh god make it end.");
+            }
+        }
     }
 
 

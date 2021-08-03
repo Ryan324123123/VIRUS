@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.Scanner;
 
@@ -9,16 +10,22 @@ public class Simulation extends JPanel
     private final int P_NUM;
     private static final int FRAME_TIME = 10;  //processing can take from 0 - 25 ms ish depending on some parameters
     private final Graph totalInfectionsGraph;
+    private final GraphManager infectionGraph;
     private int cycleCount=0;
     private final int X_BOUND_MAX=500;  //todo: next step is to have this work for any given window its put in. (adds resize compatibility)
     private final int Y_BOUND_MAX=500;
     private final double infectChance;
+    private final Timer cycleTimer;
+
     public Simulation()
     {
         setLayout(new GridLayout(1,2));
         JPanel motionSpace = new JPanel();
         motionSpace.setLayout(null);
         add(motionSpace);
+
+        infectionGraph = new GraphManager("Current Infectivity of all People :)", "Time", "Infectivity" );
+        add(infectionGraph);
 
         Scanner commandLineInput = new Scanner(System.in);
         //these three variables are used for userInput checking
@@ -95,8 +102,12 @@ public class Simulation extends JPanel
         setDoubleBuffered(true);
         setLayout(null);
         totalInfectionsGraph = new Graph("Graph 1", "time(s)", "total infection amount", "total Infected", 0,0);
+        infectionGraph.addSeries(0,0,"Infectivity");
+
+
+        cycleTimer = new Timer(FRAME_TIME, actionEvent -> SwingUtilities.invokeLater(this::update));
     }
-    public Person getPerson(int i){return people[i];}
+
 
     private void update()
     {
@@ -109,6 +120,8 @@ public class Simulation extends JPanel
         Collide();
         cycleCount ++;
         totalInfectionsGraph.addNewData(cycleCount,totalVirus);
+        infectionGraph.addData("Infectivity",cycleCount,totalVirus);
+        repaint();
     }
 
 
@@ -164,9 +177,6 @@ public class Simulation extends JPanel
             yAcc =+ -2*(-1+yPos);
         }
 
-        //avoidance of other people//
-        //yet to implement
-
         //main acceleration field//
         xAcc += (  Math.sin( X_BOUND_MAX*(xPos +X_BOUND_MAX/2d)-(yPos +Y_BOUND_MAX/2d) ) ); //2d to use floating point division
         yAcc += (  Math.cos( Y_BOUND_MAX*(xPos +X_BOUND_MAX/2d)+(yPos +Y_BOUND_MAX/2d) ) );
@@ -191,23 +201,11 @@ public class Simulation extends JPanel
     
     public void paintComponent(Graphics graphics)
     {
-        long frameStartTime = System.nanoTime();
         super.paintComponent(graphics);
         update();
         for(Person person : people) {
             person.paintComponent(graphics);
         }
-        long frameEndTime = System.nanoTime();
-        long processingTime = (frameEndTime - frameStartTime)/1000000;
-        try {
-            if(processingTime<FRAME_TIME){
-            Thread.sleep(FRAME_TIME-processingTime);
-            }
-        } catch (InterruptedException error){
-            error.printStackTrace();
-        }
-        System.out.println(processingTime+" "+(FRAME_TIME-processingTime));
-        repaint();
-
     }
+
 }
