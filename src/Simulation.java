@@ -1,7 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.Scanner;
 
@@ -10,13 +8,11 @@ public class Simulation extends JPanel
     private final Person[] people;
     private final int P_NUM;
     private static final int FRAME_TIME = 10;  //processing can take from 0 - 25 ms ish depending on some parameters
-    private final Graph totalInfectionsGraph;
     private final GraphManager infectionGraph;
     private int cycleCount=0;
     private final int X_BOUND_MAX=500;  //todo: next step is to have this work for any given window its put in. (adds resize compatibility)
     private final int Y_BOUND_MAX=500;
     private final double infectChance;
-    private final Timer cycleTimer;
 
     public Simulation()
     {
@@ -100,13 +96,9 @@ public class Simulation extends JPanel
         }while(loopAgain);
         infectChance = userInputDouble;
 
-        
-
-        totalInfectionsGraph = new Graph("Graph 1", "time(s)", "total infection amount", "total Infected", 0,0);
         infectionGraph.addSeries(0,0,"Infectivity");
 
-
-        cycleTimer = new Timer(FRAME_TIME, actionEvent -> SwingUtilities.invokeLater(this::updatePeople));
+        Timer cycleTimer = new Timer(FRAME_TIME, actionEvent -> SwingUtilities.invokeLater(this::updatePeople));
         cycleTimer.setRepeats(true);
         cycleTimer.start();
     }
@@ -122,7 +114,6 @@ public class Simulation extends JPanel
         }
         Collide();
         cycleCount ++;
-        totalInfectionsGraph.addNewData(cycleCount,totalVirus);
         infectionGraph.addData("Infectivity",cycleCount,totalVirus);
         repaint();
     }
