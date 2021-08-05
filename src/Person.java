@@ -13,11 +13,11 @@ public class Person extends JComponent
     private static final int INFECTION_DURATION = 30;
     private static final int RADIUS = 30;
     private static final double MAX_INFECTION = 1.125;
-    private static final double infectionBandWidth = 6;
+    private static final double infectionRingWidth = 6;
 
     public Person(double scaleFactor){
         this.scaleFactor = scaleFactor;
-        setSize((int) (RADIUS*200*scaleFactor),(int) (RADIUS*200*scaleFactor));
+        setSize((int) (RADIUS*2*scaleFactor),(int) (RADIUS*2*scaleFactor));
     }
 
     public void setInfected(){
@@ -52,6 +52,6 @@ public class Person extends JComponent
             graphics.fillOval(1, 1, (int) (RADIUS*scaleFactor), (int) (RADIUS*scaleFactor));
         }
         graphics.setColor(new Color((int)(255* infectionLevel / MAX_INFECTION), (int) (255*(1- infectionLevel / MAX_INFECTION)), 0));
-        graphics.fillOval((int) (1 + 0.5*infectionBandWidth), (int) (1 + 0.5*infectionBandWidth), (int) ((RADIUS-infectionBandWidth)*scaleFactor), (int) ((RADIUS-infectionBandWidth)*scaleFactor));
+        graphics.fillOval((int) (1 + 0.5*infectionRingWidth), (int) (1 + 0.5*infectionRingWidth), (int) ((RADIUS-infectionRingWidth)*scaleFactor), (int) ((RADIUS-infectionRingWidth)*scaleFactor));
     }
 }

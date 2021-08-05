@@ -17,7 +17,7 @@ public class Window extends JFrame
         add(sim);  // the order that items are added will determine the rendering order
 
         pack();
-        toFront();
         setVisible(true);
+        toFront();
     }
 }
