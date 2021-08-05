@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.Scanner;
 
@@ -20,6 +21,7 @@ public class Simulation extends JPanel
     public Simulation()
     {
         setLayout(new GridLayout(1,2));
+        setDoubleBuffered(true);
         JPanel motionSpace = new JPanel();
         motionSpace.setLayout(null);
         add(motionSpace);
@@ -99,17 +101,18 @@ public class Simulation extends JPanel
         infectChance = userInputDouble;
 
         
-        setDoubleBuffered(true);
-        setLayout(null);
+
         totalInfectionsGraph = new Graph("Graph 1", "time(s)", "total infection amount", "total Infected", 0,0);
         infectionGraph.addSeries(0,0,"Infectivity");
 
 
-        cycleTimer = new Timer(FRAME_TIME, actionEvent -> SwingUtilities.invokeLater(this::update));
+        cycleTimer = new Timer(FRAME_TIME, actionEvent -> SwingUtilities.invokeLater(this::updatePeople));
+        cycleTimer.setRepeats(true);
+        cycleTimer.start();
     }
 
 
-    private void update()
+    private void updatePeople()
     {
         double totalVirus = 0;
         for(int i=0; i<P_NUM; i++){
@@ -202,10 +205,6 @@ public class Simulation extends JPanel
     public void paintComponent(Graphics graphics)
     {
         super.paintComponent(graphics);
-        update();
-        for(Person person : people) {
-            person.paintComponent(graphics);
-        }
     }
 
 }

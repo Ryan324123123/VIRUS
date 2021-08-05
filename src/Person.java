@@ -17,6 +17,7 @@ public class Person extends JComponent
 
     public Person(double scaleFactor){
         this.scaleFactor = scaleFactor;
+        setSize((int) (RADIUS*200*scaleFactor),(int) (RADIUS*200*scaleFactor));
     }
 
     public void setInfected(){
@@ -45,14 +46,12 @@ public class Person extends JComponent
     public void paintComponent(Graphics graphics)
     {
         super.paintComponent(graphics);
-        setLocation((int) (thisXPos * 100), (int) (thisYPos * 100));
+        setLocation((int) thisXPos, (int) thisYPos);
         if(infectionProgress != 30){
             graphics.setColor(Color.blue);
-            graphics.fillOval((int) (thisXPos), (int) (thisYPos), (int) (RADIUS*scaleFactor), (int) (RADIUS*scaleFactor));
+            graphics.fillOval(1, 1, (int) (RADIUS*scaleFactor), (int) (RADIUS*scaleFactor));
         }
         graphics.setColor(new Color((int)(255* infectionLevel / MAX_INFECTION), (int) (255*(1- infectionLevel / MAX_INFECTION)), 0));
-        graphics.fillOval((int) (thisXPos+infectionBandWidth*scaleFactor*0.5), (int) (thisYPos+infectionBandWidth*scaleFactor*0.5), (int) ((RADIUS-infectionBandWidth)*scaleFactor), (int) ((RADIUS-infectionBandWidth)*scaleFactor));
+        graphics.fillOval((int) (1 + 0.5*infectionBandWidth), (int) (1 + 0.5*infectionBandWidth), (int) ((RADIUS-infectionBandWidth)*scaleFactor), (int) ((RADIUS-infectionBandWidth)*scaleFactor));
     }
-    
-    
 }
