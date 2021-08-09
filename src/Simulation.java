@@ -7,16 +7,17 @@ public class Simulation extends JPanel
 {
     private final Person[] people;
     private final int P_NUM;
-    private static final int FRAME_TIME = 10;  //processing can take from 0 - 25 ms ish depending on some parameters
+    private static final int FRAME_TIME = 25;  //processing can take from 0 - 25 ms ish depending on some parameters
     private final GraphManager infectionGraph;
+    private final GraphManager worldTallies;
     private int cycleCount=0;
     private final int X_BOUND_MAX=500;  //todo: next step is to have this work for any given window its put in. (adds resize compatibility)
-    private final int Y_BOUND_MAX=500;
+    private final int Y_BOUND_MAX=500;  //because if the window that the motionSpace goes into is smaller that the XY bounds then the people move off the screen
     private final double infectChance;
 
     public Simulation()
     {
-        setLayout(new GridLayout(1,2));
+        setLayout(new GridLayout(1,3));
         setDoubleBuffered(true);
         JPanel motionSpace = new JPanel();
         motionSpace.setLayout(null);
@@ -24,6 +25,8 @@ public class Simulation extends JPanel
 
         infectionGraph = new GraphManager("Current Infectivity of all People :)", "Time", "Infectivity" );
         add(infectionGraph);
+        worldTallies = new GraphManager("Tallies for the simulation", "Time", "Various sums");
+        add(worldTallies);
 
         Scanner commandLineInput = new Scanner(System.in);
         //these three variables are used for userInput checking
@@ -98,6 +101,8 @@ public class Simulation extends JPanel
 
         infectionGraph.addSeries(0,0,"Infectivity");
 
+        worldTallies.addSeries(0,0,"tally of infected people");
+                
         Timer cycleTimer = new Timer(FRAME_TIME, actionEvent -> SwingUtilities.invokeLater(this::updatePeople));
         cycleTimer.setRepeats(true);
         cycleTimer.start();
@@ -107,13 +112,18 @@ public class Simulation extends JPanel
     private void updatePeople()
     {
         double totalVirus = 0;
+        int totalInfections = 0;
         for(int i=0; i<P_NUM; i++){
             people[i].infectionEvolution();
             totalVirus += people[i].getInfectionLevel();
+            if(people[i].getInfectionLevel() != 0){
+                totalInfections += people[i].getTimesInfected();
+            }
             movePerson(i);
         }
         Collide();
         cycleCount ++;
+        worldTallies.addData("tally of infected people",cycleCount,totalInfections);
         infectionGraph.addData("Infectivity",cycleCount,totalVirus);
         repaint();
     }

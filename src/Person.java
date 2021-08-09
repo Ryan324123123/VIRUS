@@ -14,13 +14,15 @@ public class Person extends JComponent
     private static final int RADIUS = 30;
     private static final double MAX_INFECTION = 1.125;
     private static final double infectionRingWidth = 6;
+    private int timesInfected = 0;
 
     public Person(double scaleFactor){
         this.scaleFactor = scaleFactor;
-        setSize((int) (RADIUS*2*scaleFactor),(int) (RADIUS*2*scaleFactor));
+        setSize((int) (RADIUS*2*scaleFactor),(int) (RADIUS*2*scaleFactor)); //this tells the GUI module, JComponents, the size of the people which it uses behind the scenes
     }
 
     public void setInfected(){
+        timesInfected ++;
         infectionProgress = 0;
     }
     public void infectionEvolution(){
@@ -41,7 +43,7 @@ public class Person extends JComponent
     public void setYVel(double newYVel){ thisYVel = newYVel; }
     public void setXCoordinate(double newXPos){ thisXPos = newXPos; }
     public void setYCoordinate(double newYPos){ thisYPos = newYPos; }
-    
+    public int getTimesInfected(){return timesInfected; }
     
     public void paintComponent(Graphics graphics)
     {
