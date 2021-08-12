@@ -14,18 +14,22 @@ public class Simulation extends JPanel
     private final int X_BOUND_MAX=500;  //todo: next step is to have this work for any given window its put in. (adds resize compatibility)
     private final int Y_BOUND_MAX=500;  //because if the window that the motionSpace goes into is smaller that the XY bounds then the people move off the screen
     private final double infectChance;
+    private final static String seriesRecovered = "Tally of Recovered People";
+    private final static String seriesInfected = "Tally of Infected People";
+    private final static String seriesInfectionLevel = "Total Infectivity for all people";
+    private final JPanel motionSpace;
 
     public Simulation()
     {
         setLayout(new GridLayout(1,3));
         setDoubleBuffered(true);
-        JPanel motionSpace = new JPanel();
+        motionSpace = new JPanel();
         motionSpace.setLayout(null);
         add(motionSpace);
 
-        infectionGraph = new GraphManager("Current Infectivity of all People :)", "Time", "Infectivity" );
+        infectionGraph = new GraphManager("Current Infectivity of all People", "Time", "Infectivity" );
         add(infectionGraph);
-        worldTallies = new GraphManager("Tallies for the simulation", "Time", "Various sums");
+        worldTallies = new GraphManager("Tallies for the simulation", "Time", "Various Tallies");
         add(worldTallies);
 
         Scanner commandLineInput = new Scanner(System.in);
@@ -39,14 +43,14 @@ public class Simulation extends JPanel
         do {
             loopAgain=true;
             while(!commandLineInput.hasNextInt()){ //this catches non-integer values
-                System.out.println("Invalid input, please enter a value less than ___.");
+                System.out.println("Invalid input, please enter an integer around the normal value (give or take 100,000)");
                 commandLineInput.next();
             }
             userInputInt=commandLineInput.nextInt();
             if(userInputInt>0){
                 loopAgain = false;
             }else{
-                System.out.println("Invalid input, please enter a value less than 10000");
+                System.out.println("Invalid input, please enter a value greater than 0");
             }
         }while(loopAgain);
         double scaleFactor = 500/Math.sqrt(userInputInt); //this gets passed to each person to scale how large they are in the window
@@ -99,10 +103,10 @@ public class Simulation extends JPanel
         }while(loopAgain);
         infectChance = userInputDouble;
 
-        infectionGraph.addSeries(0,0,"Infectivity");
+        infectionGraph.addSeries(0,0,seriesInfectionLevel);
+        worldTallies.addSeries(0,0,seriesRecovered);
+        worldTallies.addSeries(0,0,seriesInfected);
 
-        worldTallies.addSeries(0,0,"tally of infected people");
-                
         Timer cycleTimer = new Timer(FRAME_TIME, actionEvent -> SwingUtilities.invokeLater(this::updatePeople));
         cycleTimer.setRepeats(true);
         cycleTimer.start();
@@ -113,19 +117,22 @@ public class Simulation extends JPanel
     {
         double totalVirus = 0;
         int totalInfections = 0;
+        int totalRecoveries = 0;
         for(int i=0; i<P_NUM; i++){
             people[i].infectionEvolution();
             totalVirus += people[i].getInfectionLevel();
-            if(people[i].getInfectionLevel() != 0){
-                totalInfections += people[i].getTimesInfected();
-            }
+            totalInfections += people[i].getTimesInfected();
+            totalRecoveries += people[i].getTimesRecovered();
             movePerson(i);
         }
         Collide();
         cycleCount ++;
-        worldTallies.addData("tally of infected people",cycleCount,totalInfections);
-        infectionGraph.addData("Infectivity",cycleCount,totalVirus);
+        worldTallies.addData(seriesInfected,cycleCount,totalInfections);
+        worldTallies.addData(seriesRecovered,cycleCount,totalRecoveries);
+        infectionGraph.addData(seriesInfectionLevel,cycleCount,totalVirus);
         repaint();
+        // TODO: System.out.print(motionSpace.getSize().height+", ");
+        // System.out.println(motionSpace.getSize().width);
     }
 
 
@@ -198,7 +205,8 @@ public class Simulation extends JPanel
         people[i].setYVel(yVel);
         people[i].setXCoordinate(xPos);
         people[i].setYCoordinate(yPos);
-        
+
+        people[i].setLocation((int) xPos, (int) yPos);  //this changes the graphical 'location' with reference to the jPanel
     }
     public int getX_BOUND_MAX(){return X_BOUND_MAX;}
     public int getY_BOUND_MAX(){return Y_BOUND_MAX;}

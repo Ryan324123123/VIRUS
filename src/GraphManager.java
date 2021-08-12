@@ -37,16 +37,24 @@ public class GraphManager extends JPanel {
         graph.addSeries(seriesName, new double[]{initX}, new double[]{initY});
     }
     public void addData(String seriesName, double nextX, double nextY ){
-        for (DataSeries dataSeries : arrayOfSeries) { //enhanced for loop for nicer code, dataSeries is the identifier for the particular one we are looking at, at any moment.
-            if (dataSeries.nameOfSeries.equals(seriesName)) {
-                dataSeries.addDataPoint(nextX, nextY);
-                graph.updateXYSeries(seriesName, dataSeries.xData, dataSeries.yData, null);
+        Integer matchIndex=null;
+        for (int i =0; i<arrayOfSeries.size(); i++) { //enhanced 'for-loop' for nicer code, dataSeries is the identifier for the particular one we are looking at, at any moment.
+            if (arrayOfSeries.get(i).nameOfSeries.equals(seriesName)) {
+                matchIndex = i;
                 break; //once the match has been made, don't check the others.
-            } else {
-                System.out.println("impossible condition reached. Oh god make it end.");
             }
         }
+
+        if(matchIndex != null){
+             arrayOfSeries.get(matchIndex).addDataPoint(nextX, nextY);
+                graph.updateXYSeries(seriesName, arrayOfSeries.get(matchIndex).xData, arrayOfSeries.get(matchIndex).yData, null);
+        }else {
+            System.out.println("impossible condition reached. Oh god make it end.");
+            System.out.println("caused by: " + seriesName + ", Series on Graph:");
+            for (DataSeries seriesToPrint : arrayOfSeries) {
+                System.out.print(seriesToPrint.nameOfSeries + ", ");
+            }
+            System.out.println();
+        }
     }
-
-
 }

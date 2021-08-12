@@ -15,6 +15,7 @@ public class Person extends JComponent
     private static final double MAX_INFECTION = 1.125;
     private static final double infectionRingWidth = 6;
     private int timesInfected = 0;
+    private int timesRecovered = 0;
 
     public Person(double scaleFactor){
         this.scaleFactor = scaleFactor;
@@ -30,6 +31,9 @@ public class Person extends JComponent
             infectionLevel = -0.005 * Math.pow(infectionProgress, 2) + 0.15 * infectionProgress;
             infectionProgress ++;
         } else {
+            if(infectionProgress == 29){ //==29 is because thats the last stage of an infected person and 30 cant be used as its a resting state of a person
+                timesRecovered ++;
+            }
             infectionLevel = 0;
         }
     }
@@ -44,11 +48,11 @@ public class Person extends JComponent
     public void setXCoordinate(double newXPos){ thisXPos = newXPos; }
     public void setYCoordinate(double newYPos){ thisYPos = newYPos; }
     public int getTimesInfected(){return timesInfected; }
-    
+    public int getTimesRecovered(){return timesRecovered; }
+
     public void paintComponent(Graphics graphics)
     {
         super.paintComponent(graphics);
-        setLocation((int) thisXPos, (int) thisYPos);
         if(infectionProgress != 30){
             graphics.setColor(Color.blue);
             graphics.fillOval(1, 1, (int) (RADIUS*scaleFactor), (int) (RADIUS*scaleFactor));
