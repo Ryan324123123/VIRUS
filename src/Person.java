@@ -31,7 +31,7 @@ public class Person extends JComponent
             infectionLevel = -0.005 * Math.pow(infectionProgress, 2) + 0.15 * infectionProgress;
             infectionProgress ++;
         } else {
-            if(infectionProgress == 29){ //==29 is because thats the last stage of an infected person and 30 cant be used as its a resting state of a person
+            if(infectionProgress>30){
                 timesRecovered ++;
             }
             infectionLevel = 0;

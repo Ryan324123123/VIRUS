@@ -5,10 +5,11 @@ public class Window extends JFrame
 {
     public Window()
     {
+        int X_BOUND_MAX = 1000;
+        int Y_BOUND_MAX = 600;
+        Simulation sim = new Simulation(X_BOUND_MAX, Y_BOUND_MAX);
 
-        Simulation sim = new Simulation();
-        
-        getContentPane().setPreferredSize(new Dimension(sim.getX_BOUND_MAX()*10, sim.getY_BOUND_MAX()));
+        getContentPane().setPreferredSize(new Dimension(3*X_BOUND_MAX/2, Y_BOUND_MAX));
         getContentPane().setMinimumSize(new Dimension(640, 480));
         getContentPane().setMaximumSize(new Dimension(1920, 1080));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

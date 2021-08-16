@@ -46,8 +46,8 @@ public class GraphManager extends JPanel {
         }
 
         if(matchIndex != null){
-             arrayOfSeries.get(matchIndex).addDataPoint(nextX, nextY);
-                graph.updateXYSeries(seriesName, arrayOfSeries.get(matchIndex).xData, arrayOfSeries.get(matchIndex).yData, null);
+            arrayOfSeries.get(matchIndex).addDataPoint(nextX, nextY);
+            graph.updateXYSeries(seriesName, arrayOfSeries.get(matchIndex).xData, arrayOfSeries.get(matchIndex).yData, null);
         }else {
             System.out.println("impossible condition reached. Oh god make it end.");
             System.out.println("caused by: " + seriesName + ", Series on Graph:");

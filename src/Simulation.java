@@ -11,21 +11,24 @@ public class Simulation extends JPanel
     private final GraphManager infectionGraph;
     private final GraphManager worldTallies;
     private int cycleCount=0;
-    private final int X_BOUND_MAX=500;  //todo: next step is to have this work for any given window its put in. (adds resize compatibility)
-    private final int Y_BOUND_MAX=500;  //because if the window that the motionSpace goes into is smaller that the XY bounds then the people move off the screen
+    private final int X_BOUND_MAX;  //todo: next step is to have this work for any given window its put in. (adds resize compatibility)
+    private final int Y_BOUND_MAX;  //because if the window that the motionSpace goes into is smaller that the XY bounds then the people move off the screen
     private final double infectChance;
     private final static String seriesRecovered = "Tally of Recovered People";
     private final static String seriesInfected = "Tally of Infected People";
     private final static String seriesInfectionLevel = "Total Infectivity for all people";
     private final JPanel motionSpace;
 
-    public Simulation()
+    public Simulation(int X_BOUND, int Y_BOUND)
     {
         setLayout(new GridLayout(1,3));
         setDoubleBuffered(true);
         motionSpace = new JPanel();
         motionSpace.setLayout(null);
         add(motionSpace);
+
+        this.X_BOUND_MAX = X_BOUND;
+        this.Y_BOUND_MAX = Y_BOUND;
 
         infectionGraph = new GraphManager("Current Infectivity of all People", "Time", "Infectivity" );
         add(infectionGraph);
@@ -53,7 +56,7 @@ public class Simulation extends JPanel
                 System.out.println("Invalid input, please enter a value greater than 0");
             }
         }while(loopAgain);
-        double scaleFactor = 500/Math.sqrt(userInputInt); //this gets passed to each person to scale how large they are in the window
+        double scaleFactor = Math.sqrt((float) (X_BOUND_MAX*Y_BOUND_MAX/userInputInt)); // 500 needs to be changed to the get window size
 
         //by using population density, calculate the amount of people to simulate for.
         //while the userInput is not in the 1-10 range, keep asking for the input.
@@ -71,9 +74,8 @@ public class Simulation extends JPanel
                 System.out.println("Invalid input, please enter an integer between 1 - 10.");
             }
         }while(loopAgain);
-
-
         P_NUM = (int) ((userInputInt*X_BOUND_MAX*Y_BOUND_MAX) / (20000*scaleFactor));
+
         people = new Person[P_NUM];
         System.out.println(P_NUM);
         for(int i=0; i<P_NUM; i++){
@@ -104,7 +106,7 @@ public class Simulation extends JPanel
         infectChance = userInputDouble;
 
         infectionGraph.addSeries(0,0,seriesInfectionLevel);
-        worldTallies.addSeries(0,0,seriesRecovered);
+        worldTallies.addSeries(0,10,seriesRecovered);
         worldTallies.addSeries(0,0,seriesInfected);
 
         Timer cycleTimer = new Timer(FRAME_TIME, actionEvent -> SwingUtilities.invokeLater(this::updatePeople));
@@ -131,8 +133,6 @@ public class Simulation extends JPanel
         worldTallies.addData(seriesRecovered,cycleCount,totalRecoveries);
         infectionGraph.addData(seriesInfectionLevel,cycleCount,totalVirus);
         repaint();
-        // TODO: System.out.print(motionSpace.getSize().height+", ");
-        // System.out.println(motionSpace.getSize().width);
     }
 
 
@@ -151,7 +151,7 @@ public class Simulation extends JPanel
                 }
                 if(people[i].getInfectionLevel() == 0 && people[j].getInfectionLevel() != 0 ){
                     infector = people[j];
-                    infectee = people[i]; 
+                    infectee = people[i];
                 }
                 if(infector != null){
                     double distance = Math.sqrt(Math.pow(infector.getXCoordinate()-infectee.getXCoordinate(),2)+Math.pow(infector.getYCoordinate()-infectee.getYCoordinate(),2));
@@ -165,7 +165,7 @@ public class Simulation extends JPanel
             }
         }
     }
-    private void movePerson(int i){        
+    private void movePerson(int i){
         //get the pos and vel of the person this method is moving
         double xVel = people[i].getXVelocity();
         double yVel = people[i].getYVelocity();
@@ -208,9 +208,6 @@ public class Simulation extends JPanel
 
         people[i].setLocation((int) xPos, (int) yPos);  //this changes the graphical 'location' with reference to the jPanel
     }
-    public int getX_BOUND_MAX(){return X_BOUND_MAX;}
-    public int getY_BOUND_MAX(){return Y_BOUND_MAX;}
-    
     public void paintComponent(Graphics graphics)
     {
         super.paintComponent(graphics);
