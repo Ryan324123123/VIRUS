@@ -8,7 +8,7 @@ public class Simulation extends JPanel
     private final Person[] people;
     private final int P_NUM;
     private static final int FRAME_TIME = 25;  //processing can take from 0 - 25 ms ish depending on some parameters
-    private final GraphManager infectionGraph;
+    private final GraphManager virusProperties;
     private final GraphManager worldTallies;
     private int cycleCount=0;
     private final int X_BOUND_MAX;  //todo: next step is to have this work for any given window its put in. (adds resize compatibility)
@@ -17,7 +17,7 @@ public class Simulation extends JPanel
     private final static String seriesRecovered = "Tally of Recovered People";
     private final static String seriesInfected = "Tally of Infected People";
     private final static String seriesInfectionLevel = "Total Infectivity for all people";
-    private final JPanel motionSpace;
+    private final JPanel motionSpace; //motion space is redundent in this iteration of hte program but for future use I have put the visual representation into its own jPanel
 
     public Simulation(int X_BOUND, int Y_BOUND)
     {
@@ -30,8 +30,8 @@ public class Simulation extends JPanel
         this.X_BOUND_MAX = X_BOUND;
         this.Y_BOUND_MAX = Y_BOUND;
 
-        infectionGraph = new GraphManager("Current Infectivity of all People", "Time", "Infectivity" );
-        add(infectionGraph);
+        virusProperties = new GraphManager("Current Infectivity of all People", "Time", "Infectivity" );
+        add(virusProperties);
         worldTallies = new GraphManager("Tallies for the simulation", "Time", "Various Tallies");
         add(worldTallies);
 
@@ -46,14 +46,14 @@ public class Simulation extends JPanel
         do {
             loopAgain=true;
             while(!commandLineInput.hasNextInt()){ //this catches non-integer values
-                System.out.println("Invalid input, please enter an integer around the normal value (give or take 100,000)");
+                System.out.println("Invalid input, please enter an integer around the normal value (150,000m^2 - 500,000m^2)");
                 commandLineInput.next();
             }
             userInputInt=commandLineInput.nextInt();
-            if(userInputInt>0){
+            if(userInputInt>150000 && userInputInt < 500000){
                 loopAgain = false;
             }else{
-                System.out.println("Invalid input, please enter a value greater than 0");
+                System.out.println("Invalid input, please enter an integer around the normal value (150,000m^2 - 500,000m^2)");
             }
         }while(loopAgain);
         double scaleFactor = Math.sqrt((float) (X_BOUND_MAX*Y_BOUND_MAX/userInputInt)); // 500 needs to be changed to the get window size
@@ -74,7 +74,7 @@ public class Simulation extends JPanel
                 System.out.println("Invalid input, please enter an integer between 1 - 10.");
             }
         }while(loopAgain);
-        P_NUM = (int) ((userInputInt*X_BOUND_MAX*Y_BOUND_MAX) / (20000*scaleFactor));
+        P_NUM = 2 + (int) ((userInputInt*X_BOUND_MAX*Y_BOUND_MAX) / (20000*scaleFactor)); //minimum of 2 people to stop any errors
 
         people = new Person[P_NUM];
         System.out.println(P_NUM);
@@ -105,8 +105,8 @@ public class Simulation extends JPanel
         }while(loopAgain);
         infectChance = userInputDouble;
 
-        infectionGraph.addSeries(0,0,seriesInfectionLevel);
-        worldTallies.addSeries(0,10,seriesRecovered);
+        virusProperties.addSeries(0,0,seriesInfectionLevel);
+        worldTallies.addSeries(0,P_NUM,seriesRecovered);
         worldTallies.addSeries(0,0,seriesInfected);
 
         Timer cycleTimer = new Timer(FRAME_TIME, actionEvent -> SwingUtilities.invokeLater(this::updatePeople));
@@ -117,21 +117,22 @@ public class Simulation extends JPanel
 
     private void updatePeople()
     {
-        double totalVirus = 0;
-        int totalInfections = 0;
-        int totalRecoveries = 0;
+        int tallyInfectedPeople = 0;
+        int tallyHealthyPeople = P_NUM;
         for(int i=0; i<P_NUM; i++){
             people[i].infectionEvolution();
-            totalVirus += people[i].getInfectionLevel();
-            totalInfections += people[i].getTimesInfected();
-            totalRecoveries += people[i].getTimesRecovered();
+            if(people[i].getInfectionLevel() > 1){
+                tallyInfectedPeople += 1;
+                tallyHealthyPeople -= 1;
+            }
             movePerson(i);
         }
         Collide();
         cycleCount ++;
-        worldTallies.addData(seriesInfected,cycleCount,totalInfections);
-        worldTallies.addData(seriesRecovered,cycleCount,totalRecoveries);
-        infectionGraph.addData(seriesInfectionLevel,cycleCount,totalVirus);
+
+        worldTallies.addData(seriesInfected,cycleCount,tallyInfectedPeople);
+        worldTallies.addData(seriesRecovered,cycleCount,tallyHealthyPeople);
+        //infectionGraph.addData(seriesInfectionLevel,cycleCount,totalVirus);  //add back in as graph of virus infectivities
         repaint();
     }
 
