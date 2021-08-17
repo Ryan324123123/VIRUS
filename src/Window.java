@@ -5,7 +5,7 @@ public class Window extends JFrame
 {
     public Window()
     {
-        int X_BOUND_MAX = 1000;
+        int X_BOUND_MAX = 700;
         int Y_BOUND_MAX = 600;
         Simulation sim = new Simulation(X_BOUND_MAX, Y_BOUND_MAX);
 
@@ -15,7 +15,8 @@ public class Window extends JFrame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //add items
-        add(sim);  // the order that items are added will determine the rendering order
+        setLayout(new BorderLayout());
+        add(sim, BorderLayout.CENTER);  // the order that items are added will determine the rendering order
 
         pack();
         setVisible(true);

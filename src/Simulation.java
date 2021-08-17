@@ -17,23 +17,40 @@ public class Simulation extends JPanel
     private final static String seriesRecovered = "Tally of Recovered People";
     private final static String seriesInfected = "Tally of Infected People";
     private final static String seriesInfectionLevel = "Total Infectivity for all people";
-    private final JPanel motionSpace; //motion space is redundent in this iteration of hte program but for future use I have put the visual representation into its own jPanel
+    private final JPanel motionSpace; //motion space is redundant in this iteration of hte program but for future use I have put the visual representation into its own jPanel
+    GridBagConstraints constraints = new GridBagConstraints();
+
 
     public Simulation(int X_BOUND, int Y_BOUND)
     {
-        setLayout(new GridLayout(1,3));
+        this.X_BOUND_MAX = X_BOUND; //I use X_BOUND_MAX in all the code so to keep things consistent ill just use *_MAX
+        this.Y_BOUND_MAX = Y_BOUND;
         setDoubleBuffered(true);
+
+        setLayout(new GridBagLayout());
+        constraints.gridy = 0;
+        constraints.gridx = 0;
+        constraints.weightx = 2;
+        constraints.weighty = 2;
+
         motionSpace = new JPanel();
         motionSpace.setLayout(null);
-        add(motionSpace);
+        motionSpace.setPreferredSize(new Dimension(X_BOUND_MAX, Y_BOUND_MAX));
+        add(motionSpace, constraints);
 
-        this.X_BOUND_MAX = X_BOUND;
-        this.Y_BOUND_MAX = Y_BOUND;
-
+        constraints.gridy = 0;
+        constraints.gridx = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
         virusProperties = new GraphManager("Current Infectivity of all People", "Time", "Infectivity" );
-        add(virusProperties);
+        virusProperties.setPreferredSize(new Dimension(2000,2000));
+        add(virusProperties, constraints);
+
+        constraints.gridy = 1;
+        constraints.gridx = 1;
         worldTallies = new GraphManager("Tallies for the simulation", "Time", "Various Tallies");
-        add(worldTallies);
+        worldTallies.setPreferredSize(new Dimension(2000,2000));
+        add(worldTallies, constraints);
 
         Scanner commandLineInput = new Scanner(System.in);
         //these three variables are used for userInput checking
@@ -133,14 +150,12 @@ public class Simulation extends JPanel
         worldTallies.addData(seriesInfected,cycleCount,tallyInfectedPeople);
         worldTallies.addData(seriesRecovered,cycleCount,tallyHealthyPeople);
         //infectionGraph.addData(seriesInfectionLevel,cycleCount,totalVirus);  //add back in as graph of virus infectivities
-        repaint();
+        //repaint();
     }
 
 
     private void Collide()
     {
-        //NTS: peoples infection level doesn't start increasing until after they have left their infector
-        //pretend that I made it such that two infected people can interact but I then decided that it was sub optimal and so reverted my code
         for(int i = 0; i<P_NUM; i++){
             for(int j = i+1; j<P_NUM; j++){
                 Person infector = null;
