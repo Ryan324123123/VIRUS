@@ -7,7 +7,7 @@ public class Simulation extends JPanel
 {
     private final Person[] people;
     private final int P_NUM;
-    private static final int FRAME_TIME = 25;  //processing can take from 0 - 25 ms ish depending on some parameters
+    private static final int FRAME_TIME = 30;  //processing can take from 0 - 25 ms ish depending on some parameters
     private final GraphManager virusProperties;
     private final GraphManager worldTallies;
     private int cycleCount=0;
@@ -26,31 +26,18 @@ public class Simulation extends JPanel
         this.X_BOUND_MAX = X_BOUND; //I use X_BOUND_MAX in all the code so to keep things consistent ill just use *_MAX
         this.Y_BOUND_MAX = Y_BOUND;
         setDoubleBuffered(true);
-
-        setLayout(new GridBagLayout());
-        constraints.gridy = 0;
-        constraints.gridx = 0;
-        constraints.weightx = 2;
-        constraints.weighty = 2;
-
+        setBackground(new Color(0, 0, 0));
+        setLayout(new GridLayout(1,2,2,0));
         motionSpace = new JPanel();
         motionSpace.setLayout(null);
-        motionSpace.setPreferredSize(new Dimension(X_BOUND_MAX, Y_BOUND_MAX));
-        add(motionSpace, constraints);
-
-        constraints.gridy = 0;
-        constraints.gridx = 1;
-        constraints.weightx = 1;
-        constraints.weighty = 1;
-        virusProperties = new GraphManager("Current Infectivity of all People", "Time", "Infectivity" );
-        virusProperties.setPreferredSize(new Dimension(2000,2000));
-        add(virusProperties, constraints);
-
-        constraints.gridy = 1;
-        constraints.gridx = 1;
-        worldTallies = new GraphManager("Tallies for the simulation", "Time", "Various Tallies");
-        worldTallies.setPreferredSize(new Dimension(2000,2000));
-        add(worldTallies, constraints);
+        add(motionSpace);
+        JPanel graphSpace = new JPanel();
+        graphSpace.setLayout(new GridLayout(2, 1)); //indents to show that the two graphs get added to graph space and then graphSpace to simulation
+            virusProperties = new GraphManager("Current Infectivity of all People", "Time", "Infectivity" );
+            graphSpace.add(virusProperties);
+            worldTallies = new GraphManager("Tallies for the simulation", "Time", "Various Tallies");
+            graphSpace.add(worldTallies);
+        add(graphSpace);
 
         Scanner commandLineInput = new Scanner(System.in);
         //these three variables are used for userInput checking
@@ -150,7 +137,7 @@ public class Simulation extends JPanel
         worldTallies.addData(seriesInfected,cycleCount,tallyInfectedPeople);
         worldTallies.addData(seriesRecovered,cycleCount,tallyHealthyPeople);
         //infectionGraph.addData(seriesInfectionLevel,cycleCount,totalVirus);  //add back in as graph of virus infectivities
-        //repaint();
+        repaint();
     }
 
 
