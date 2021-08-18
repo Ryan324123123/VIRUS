@@ -45,7 +45,7 @@ public class Simulation extends JPanel
         double userInputDouble;
         boolean loopAgain;
 
-        //by getting the area they wish to simulate I can then scale the people to fit so they are the correct corresponding size.
+        //by getting the area they wish to simulate I can then scale the people to fit so they are the correct corresponding size/scale.
         System.out.println("Enter the open space area that you wish to simulate (250,000 is normal)");
         do {
             loopAgain=true;
@@ -54,15 +54,18 @@ public class Simulation extends JPanel
                 commandLineInput.next();
             }
             userInputInt=commandLineInput.nextInt();
-            if(userInputInt>150000 && userInputInt <= 500000){
+            if(userInputInt>=150000 && userInputInt <= 500000){
                 loopAgain = false;
             }else{
                 System.out.println("Invalid input, please enter an integer around the normal value (150,000m^2 - 500,000m^2)");
             }
         }while(loopAgain);
-        double scaleFactor = Math.floorDiv(X_BOUND_MAX*Y_BOUND_MAX, userInputInt); // is the right type of division
+        double scaleFactor = X_BOUND_MAX*Y_BOUND_MAX*1.0/ (1.0*userInputInt); // is the right type of division      //todo fix equatioun
         System.out.println(scaleFactor);
         //by using population density, calculate the amount of people to simulate for.
+
+
+
         //while the userInput is not in the 1-10 range, keep asking for the input.
         System.out.println("Enter the population density you want (1 is the least, 10 is the max.)");
         do {
@@ -78,7 +81,8 @@ public class Simulation extends JPanel
                 System.out.println("Invalid input, please enter an integer between 1 - 6.");
             }
         }while(loopAgain);
-        P_NUM = 2 + (int) ((userInputInt* Math.sqrt(X_BOUND_MAX*Y_BOUND_MAX)) / (2000*scaleFactor)); //minimum of 2 people to stop any errors
+        P_NUM = (int)  (X_BOUND_MAX*Y_BOUND_MAX / (userInputInt*scaleFactor));  //todo fix equationj
+
 
         people = new Person[P_NUM];
         System.out.println(P_NUM);
