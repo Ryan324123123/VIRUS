@@ -54,14 +54,14 @@ public class Simulation extends JPanel
                 commandLineInput.next();
             }
             userInputInt=commandLineInput.nextInt();
-            if(userInputInt>150000 && userInputInt < 500000){
+            if(userInputInt>150000 && userInputInt <= 500000){
                 loopAgain = false;
             }else{
                 System.out.println("Invalid input, please enter an integer around the normal value (150,000m^2 - 500,000m^2)");
             }
         }while(loopAgain);
-        double scaleFactor = Math.sqrt((float) (X_BOUND_MAX*Y_BOUND_MAX/userInputInt)); // 500 needs to be changed to the get window size
-
+        double scaleFactor = Math.floorDiv(X_BOUND_MAX*Y_BOUND_MAX, userInputInt); // is the right type of division
+        System.out.println(scaleFactor);
         //by using population density, calculate the amount of people to simulate for.
         //while the userInput is not in the 1-10 range, keep asking for the input.
         System.out.println("Enter the population density you want (1 is the least, 10 is the max.)");
@@ -72,13 +72,13 @@ public class Simulation extends JPanel
                 commandLineInput.next();
             }
             userInputInt=commandLineInput.nextInt();
-            if(userInputInt<=10 && userInputInt>0){
+            if(userInputInt<=6 && userInputInt>0){
                 loopAgain = false;
             }else{
-                System.out.println("Invalid input, please enter an integer between 1 - 10.");
+                System.out.println("Invalid input, please enter an integer between 1 - 6.");
             }
         }while(loopAgain);
-        P_NUM = 2 + (int) ((userInputInt*X_BOUND_MAX*Y_BOUND_MAX) / (20000*scaleFactor)); //minimum of 2 people to stop any errors
+        P_NUM = 2 + (int) ((userInputInt* Math.sqrt(X_BOUND_MAX*Y_BOUND_MAX)) / (2000*scaleFactor)); //minimum of 2 people to stop any errors
 
         people = new Person[P_NUM];
         System.out.println(P_NUM);
@@ -93,7 +93,7 @@ public class Simulation extends JPanel
         people[1].setInfected();
 
 
-        System.out.println("enter a decimal between 0 and 1. 0 is 0% and 1 is 100% infection rate");
+        System.out.println("enter a decimal between 0 and 1. 0 is 0% and 1 is 100% infection chance");
         do {
             loopAgain=true;
             while(!commandLineInput.hasNextDouble()){ //this catches non-integer values

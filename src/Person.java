@@ -13,7 +13,7 @@ public class Person extends JComponent
     private static final int INFECTION_DURATION = 30;
     private static final int RADIUS = 30;
     private static final double MAX_INFECTION = 1.125;
-    private static final double infectionRingWidth = 6;
+    private static final double infectionRingWidth = 9;
 
     public Person(double scaleFactor){
         this.scaleFactor = scaleFactor;
@@ -45,11 +45,9 @@ public class Person extends JComponent
     public void paintComponent(Graphics graphics)
     {
         super.paintComponent(graphics);
-        if(infectionProgress != 30){
-            graphics.setColor(Color.blue);
-            graphics.fillOval(1, 1, (int) (RADIUS*scaleFactor), (int) (RADIUS*scaleFactor));
-        }
         graphics.setColor(new Color((int)(255* infectionLevel / MAX_INFECTION), (int) (255*(1- infectionLevel / MAX_INFECTION)), 0));
+        graphics.fillOval(1, 1, (int) (RADIUS*scaleFactor), (int) (RADIUS*scaleFactor));
+        graphics.setColor(Color.orange);
         graphics.fillOval((int) (1 + 0.5*infectionRingWidth), (int) (1 + 0.5*infectionRingWidth), (int) ((RADIUS-infectionRingWidth)*scaleFactor), (int) ((RADIUS-infectionRingWidth)*scaleFactor));
     }
 }

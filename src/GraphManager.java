@@ -38,7 +38,7 @@ public class GraphManager extends JPanel {
     }
     public void addData(String seriesName, double nextX, double nextY ){
         Integer matchIndex=null;
-        for (int i =0; i<arrayOfSeries.size(); i++) { //enhanced 'for-loop' for nicer code, dataSeries is the identifier for the particular one we are looking at, at any moment.
+        for (int i =0; i<arrayOfSeries.size(); i++) {
             if (arrayOfSeries.get(i).nameOfSeries.equals(seriesName)) {
                 matchIndex = i;
                 break; //once the match has been made, don't check the others.
