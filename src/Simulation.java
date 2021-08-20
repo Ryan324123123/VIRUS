@@ -18,7 +18,6 @@ public class Simulation extends JPanel
     private final static String seriesInfected = "Tally of Infected People";
     private final static String seriesInfectionLevel = "Total Infectivity for all people";
     private final JPanel motionSpace; //motion space is redundant in this iteration of hte program but for future use I have put the visual representation into its own jPanel
-    GridBagConstraints constraints = new GridBagConstraints();
 
 
     public Simulation(int X_BOUND, int Y_BOUND)
@@ -60,12 +59,9 @@ public class Simulation extends JPanel
                 System.out.println("Invalid input, please enter an integer around the normal value (150,000m^2 - 500,000m^2)");
             }
         }while(loopAgain);
-        double scaleFactor = X_BOUND_MAX*Y_BOUND_MAX*1.0/ (1.0*userInputInt); // is the right type of division      //todo fix equatioun
+        double scaleFactor = X_BOUND_MAX*Y_BOUND_MAX*1.0/ (1.0*userInputInt); // is the right type of division
         System.out.println(scaleFactor);
         //by using population density, calculate the amount of people to simulate for.
-
-
-
         //while the userInput is not in the 1-10 range, keep asking for the input.
         System.out.println("Enter the population density you want (1 is the least, 10 is the max.)");
         do {
@@ -75,13 +71,13 @@ public class Simulation extends JPanel
                 commandLineInput.next();
             }
             userInputInt=commandLineInput.nextInt();
-            if(userInputInt<=6 && userInputInt>0){
+            if(userInputInt<=10 && userInputInt>0){
                 loopAgain = false;
             }else{
                 System.out.println("Invalid input, please enter an integer between 1 - 6.");
             }
         }while(loopAgain);
-        P_NUM = (int)  (X_BOUND_MAX*Y_BOUND_MAX / (userInputInt*scaleFactor));  //todo fix equationj
+        P_NUM = (int) ((15*X_BOUND_MAX*Y_BOUND_MAX * userInputInt) / (200000*scaleFactor));
 
 
         people = new Person[P_NUM];
@@ -162,7 +158,7 @@ public class Simulation extends JPanel
                 }
                 if(infector != null){
                     double distance = Math.sqrt(Math.pow(infector.getXCoordinate()-infectee.getXCoordinate(),2)+Math.pow(infector.getYCoordinate()-infectee.getYCoordinate(),2));
-                    if(distance <= people[0].getRadius()*1.1){
+                    if(distance <= people[0].getDiameter()*1.1){
                         double infectDecider = ThreadLocalRandom.current().nextDouble(0, 1);
                         if(infectDecider < infectChance) {
                             infectee.setInfected();
@@ -184,13 +180,13 @@ public class Simulation extends JPanel
         double yAcc = 0;
 
         //if statements for wall boundaries //
-        if(xPos> X_BOUND_MAX-people[i].getRadius()){
-            xAcc =+ -2*(1+xPos-X_BOUND_MAX+people[i].getRadius());  //the acceleration due to being out of bounds is a function of how far out it is.
+        if(xPos> X_BOUND_MAX-people[i].getDiameter()){
+            xAcc =+ -2*(1+xPos-X_BOUND_MAX+people[i].getDiameter());  //the acceleration due to being out of bounds is a function of how far out it is.
         }else if(xPos < 0){
             xAcc =+ -2*(-1+xPos);
         }
-        if(yPos > Y_BOUND_MAX-people[i].getRadius()){
-            yAcc =+ -2*(1+yPos-Y_BOUND_MAX+people[i].getRadius());  //the acceleration due to being out of bounds is a function of how far out it is.
+        if(yPos > Y_BOUND_MAX-people[i].getDiameter()){
+            yAcc =+ -2*(1+yPos-Y_BOUND_MAX+people[i].getDiameter());  //the acceleration due to being out of bounds is a function of how far out it is.
         }else if(yPos < 0){
             yAcc =+ -2*(-1+yPos);
         }

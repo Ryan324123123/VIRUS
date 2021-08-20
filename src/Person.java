@@ -11,13 +11,13 @@ public class Person extends JComponent
     private int infectionProgress = INFECTION_DURATION; //defaults to uninfected value which is the duration of an infection
     private final double scaleFactor;
     private static final int INFECTION_DURATION = 30;
-    private static final int RADIUS = 30;
+    private static final int DIAMETER = 15;
     private static final double MAX_INFECTION = 1.125;
-    private static final double infectionRingWidth = 9;
+    private static final double infectionRingWidth = DIAMETER /5.0;
 
     public Person(double scaleFactor){
         this.scaleFactor = scaleFactor;
-        setSize((int) (RADIUS*2*scaleFactor),(int) (RADIUS*2*scaleFactor)); //this tells the GUI module, JComponents, the size of the people which it uses behind the scenes
+        setSize((int) (DIAMETER *2*scaleFactor),(int) (DIAMETER *2*scaleFactor)); //this tells the GUI module, JComponents, the size of the people which it uses behind the scenes
     }
 
     public void setInfected(){
@@ -31,7 +31,7 @@ public class Person extends JComponent
             infectionLevel = 0;
         }
     }
-    public double getRadius(){ return RADIUS*scaleFactor; }
+    public double getDiameter(){ return DIAMETER *scaleFactor; }
     public double getInfectionLevel(){ return infectionLevel; }
     public double getXVelocity(){ return thisXVel; }
     public double getYVelocity(){ return thisYVel; }
@@ -46,8 +46,12 @@ public class Person extends JComponent
     {
         super.paintComponent(graphics);
         graphics.setColor(new Color((int)(255* infectionLevel / MAX_INFECTION), (int) (255*(1- infectionLevel / MAX_INFECTION)), 0));
-        graphics.fillOval(1, 1, (int) (RADIUS*scaleFactor), (int) (RADIUS*scaleFactor));
+        //graphics.fillOval(1, 1, (int) (RADIUS*scaleFactor), (int) (RADIUS*scaleFactor));
+        graphics.fillOval(1, 1, (int) (DIAMETER *scaleFactor), (int) (DIAMETER *scaleFactor));
+
+
         graphics.setColor(Color.orange);
-        graphics.fillOval((int) (1 + 0.5*infectionRingWidth), (int) (1 + 0.5*infectionRingWidth), (int) ((RADIUS-infectionRingWidth)*scaleFactor), (int) ((RADIUS-infectionRingWidth)*scaleFactor));
+        //graphics.fillOval((int) ((1 + Math.sqrt(infectionRingWidth/2))*scaleFactor), (int) ((1 + Math.sqrt(infectionRingWidth/2))*scaleFactor), (int) ((RADIUS-infectionRingWidth)*scaleFactor), (int) ((RADIUS-infectionRingWidth)*scaleFactor));
+        graphics.fillOval((int) ((1 + scaleFactor*infectionRingWidth)), (int) ((1 + scaleFactor*infectionRingWidth)), (int) (scaleFactor*(DIAMETER -2*infectionRingWidth)), (int) (scaleFactor*(DIAMETER -2*infectionRingWidth)));
     }
 }
