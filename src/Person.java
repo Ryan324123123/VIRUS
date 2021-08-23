@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Person extends JComponent
 {
@@ -10,17 +11,23 @@ public class Person extends JComponent
     private double infectionLevel = 0; //value of how infected a person is, 0 = not and then other +ve numbers are a scale of sickness
     private int infectionProgress = INFECTION_DURATION; //defaults to uninfected value which is the duration of an infection
     private final double scaleFactor;
+    private final double humanResponseFactor;
     private static final int INFECTION_DURATION = 30;
-    private static final int DIAMETER = 15;
+    private static final int DIAMETER = 30;
     private static final double MAX_INFECTION = 1.125;
     private static final double infectionRingWidth = DIAMETER /5.0;
+    private double virusPotency;
+    private double virusImmunity;
 
     public Person(double scaleFactor){
+        humanResponseFactor = ThreadLocalRandom.current().nextDouble(0.5, 1.3);
         this.scaleFactor = scaleFactor;
         setSize((int) (DIAMETER *2*scaleFactor),(int) (DIAMETER *2*scaleFactor)); //this tells the GUI module, JComponents, the size of the people which it uses behind the scenes
     }
 
-    public void setInfected(){
+    public void setInfected(double infectorVirusPotency, double virusMutationRate){
+        setVirusImmunity(infectorVirusPotency*humanResponseFactor);
+        setVirusPotency(infectorVirusPotency*virusMutationRate);
         infectionProgress = 0;
     }
     public void infectionEvolution(){
@@ -37,21 +44,25 @@ public class Person extends JComponent
     public double getYVelocity(){ return thisYVel; }
     public double getXCoordinate(){ return thisXPos; }
     public double getYCoordinate(){ return thisYPos; }
+    public double getVirusPotency(){ return virusPotency; }
+    public double getVirusImmunity(){ return virusImmunity; }
     public void setXVel(double newXVel){ thisXVel = newXVel; }
     public void setYVel(double newYVel){ thisYVel = newYVel; }
     public void setXCoordinate(double newXPos){ thisXPos = newXPos; }
     public void setYCoordinate(double newYPos){ thisYPos = newYPos; }
+    public void setVirusPotency(double newVirusPotency) { virusPotency = newVirusPotency; }
+    public void setVirusImmunity(double newVirusImmunity) { virusImmunity = newVirusImmunity; }
+
+
 
     public void paintComponent(Graphics graphics)
     {
         super.paintComponent(graphics);
         graphics.setColor(new Color((int)(255* infectionLevel / MAX_INFECTION), (int) (255*(1- infectionLevel / MAX_INFECTION)), 0));
-        //graphics.fillOval(1, 1, (int) (RADIUS*scaleFactor), (int) (RADIUS*scaleFactor));
         graphics.fillOval(1, 1, (int) (DIAMETER *scaleFactor), (int) (DIAMETER *scaleFactor));
 
 
         graphics.setColor(Color.orange);
-        //graphics.fillOval((int) ((1 + Math.sqrt(infectionRingWidth/2))*scaleFactor), (int) ((1 + Math.sqrt(infectionRingWidth/2))*scaleFactor), (int) ((RADIUS-infectionRingWidth)*scaleFactor), (int) ((RADIUS-infectionRingWidth)*scaleFactor));
         graphics.fillOval((int) ((1 + scaleFactor*infectionRingWidth)), (int) ((1 + scaleFactor*infectionRingWidth)), (int) (scaleFactor*(DIAMETER -2*infectionRingWidth)), (int) (scaleFactor*(DIAMETER -2*infectionRingWidth)));
     }
 }
