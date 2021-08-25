@@ -3,11 +3,11 @@ import java.awt.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.Scanner;
 
-public class Simulation extends JPanel
+public class Simulation extends JPanel  //simulation is a JPanel
 {
-    private int cycleCount=0;
-    private final Person[] people;
-    private final GraphManager virusProperties;
+    private int cycleCount=0;  //I run each cycle on a timer.
+    private final Person[] people; //htis is the list of all the people
+    private final GraphManager virusProperties; //these are the two graphs that I make
     private final GraphManager worldTallies;
     private final int P_NUM;
     private final int X_BOUND_MAX;
@@ -23,23 +23,23 @@ public class Simulation extends JPanel
     public Simulation(int X_BOUND, int Y_BOUND) {
         this.X_BOUND_MAX = X_BOUND; //I use X_BOUND_MAX in all the code so to keep things consistent ill just use *_MAX
         this.Y_BOUND_MAX = Y_BOUND;
-        setDoubleBuffered(true);
+        setDoubleBuffered(true); //true to try reduce flicker in display
         setBackground(new Color(0, 0, 0));
         setLayout(new GridLayout(1,2,2,0));
-        //motion space is redundant in this iteration of hte program but for future use I have put the visual representation into its own jPanel
+        //motion space is redundant in this iteration of hte program but for future proofing and logical reading I have put the visual representation into its own jPanel
         JPanel motionSpace = new JPanel();
         motionSpace.setLayout(null);
-        add(motionSpace);
-        JPanel graphSpace = new JPanel();
-        graphSpace.setLayout(new GridLayout(2, 1)); //indents to show that the two graphs get added to graph space and then graphSpace to simulation
+        add(motionSpace); //add it to simualtion which puts it in the first grid of the 2 made with the setLayout(new GridLayout(... above
+        JPanel graphSpace = new JPanel(); //make the graph space, its layout is a 2 deep 1 wide grid that can hold the two graphs I want to show
+        graphSpace.setLayout(new GridLayout(2, 1)); //indentation to show that the two graphs get added to graph space and then graphSpace to simulation
             virusProperties = new GraphManager("Virus Properties", "Time", "Properties" );
             graphSpace.add(virusProperties);
             worldTallies = new GraphManager("Tallies for the simulation", "Time", "Various Tallies");
             graphSpace.add(worldTallies);
-        add(graphSpace);
+        add(graphSpace); //the order of adding is important as add just puts them in the 'first' available grid.
 
         Scanner commandLineInput = new Scanner(System.in);
-        //these three variables are used for userInput checking
+        //these variables are used for userInput checking
         int userInput; //userInput is always an int by design
         boolean loopAgain;
 
@@ -51,15 +51,15 @@ public class Simulation extends JPanel
                 System.out.println("Invalid input, please enter an integer around the normal value (150,000m^2 - 500,000m^2)");
                 commandLineInput.next();
             }
-            userInput=commandLineInput.nextInt();
+            userInput=commandLineInput.nextInt(); //this catches values outr of the range I want to accept, others can work but I want to limit the range of values
             if(userInput>=150000 && userInput <= 500000){
                 loopAgain = false;
             }else{
                 System.out.println("Invalid input, please enter an integer around the normal value (150,000m^2 - 500,000m^2)");
             }
         }while(loopAgain);
-        double scaleFactor = X_BOUND_MAX*Y_BOUND_MAX*1.0/ (1.0*userInput); // is the right type of division
-        System.out.println(scaleFactor); //todo: THIS IS A DEBUG PRINT
+        double scaleFactor = X_BOUND_MAX*Y_BOUND_MAX*1.0/ (1.0*userInput); // from the user input find how the world 'size' is different compared to the standard whic his a 500 by 500 space
+
 
         //get a value for how fast the virus can mutate
         System.out.println("Enter from 1 to 10 how fast the virus mutates between each infection.");
@@ -76,7 +76,7 @@ public class Simulation extends JPanel
                 System.out.println("Invalid input, please enter an integer between 1 - 10.");
             }
         }while(loopAgain);
-        virusMutationRate = userInput/5.0; //the virus can mutate much faster than people.
+        virusMutationRate = userInput/5.0; //the virus can mutate much faster than people. And the user input is converted into a 'usable' number for later
 
         //by using population density, calculate the amount of people to simulate for.
         //while the userInput is not in the 1-10 range, keep asking for the input.
@@ -94,22 +94,22 @@ public class Simulation extends JPanel
                 System.out.println("Invalid input, please enter an integer between 1 - 6.");
             }
         }while(loopAgain);
-        P_NUM = (int) ((15*X_BOUND_MAX*Y_BOUND_MAX * userInput) / (200000*scaleFactor));
+        P_NUM = (int) ((15*X_BOUND_MAX*Y_BOUND_MAX * userInput) / (200000*scaleFactor)); //P_NUM uses the open space and the pop-density to workout a number of people. The 200k is kida abertary but it acts as a 'unit converter' form pixels to the 'real world'
 
 
-        people = new Person[P_NUM];
+        people = new Person[P_NUM]; //create all the people
         System.out.println(P_NUM);
         for(int i=0; i<P_NUM; i++){
             people[i] = new Person(scaleFactor);
-            people[i].setXCoordinate(ThreadLocalRandom.current().nextDouble(0, X_BOUND_MAX));
+            people[i].setXCoordinate(ThreadLocalRandom.current().nextDouble(0, X_BOUND_MAX)); //each person is made with a random position within the bounds
             people[i].setYCoordinate(ThreadLocalRandom.current().nextDouble(0, Y_BOUND_MAX));
             Person Person = people[i];
             motionSpace.add(Person);  //people gat added to the JPanel that is for the motion of the people.
         }
         people[0].setInfected(1.0, virusMutationRate); // virus potency starts at 1
-        people[1].setInfected(1.0, virusMutationRate);
+        people[1].setInfected(1.0, virusMutationRate); // adds two infected people
 
-
+        // this detirmines the chance of an infection for a given 'collision'
         System.out.println("enter an integer between 0 and 10 for the infection chance, the range is 0% to 100%. Most virus have an infect chance of 8 - 10");
         do {
             loopAgain=true;
@@ -124,20 +124,20 @@ public class Simulation extends JPanel
                 System.out.println("Invalid input, please enter a integer between 0 - 10.");
             }
         }while(loopAgain);
-        infectChance = userInput/10.0;
+        infectChance = userInput/10.0; //is then put on a scale of 0-1 but it takes int value inputs
 
         virusProperties.addSeries(0,0,seriesVirusPotency);
-        virusProperties.addSeries(0,0, seriesPersonResistivity);
+        virusProperties.addSeries(0,0, seriesPersonResistivity); //add the series that I want to add to the graphs
         worldTallies.addSeries(0,P_NUM,seriesRecovered);
         worldTallies.addSeries(0,0,seriesInfected);
 
-        Timer cycleTimer = new Timer(FRAME_TIME, actionEvent -> SwingUtilities.invokeLater(this::updatePeople));
+        Timer cycleTimer = new Timer(FRAME_TIME, actionEvent -> SwingUtilities.invokeLater(this::updatePeople)); //start the timer, after its run everything it then runs updatePeople which then runs repaint and so the next cycle starts
         cycleTimer.setRepeats(true);
         cycleTimer.start();
     }
 
 
-    private void updatePeople() {
+    private void updatePeople() { //in updatePeople the data is gathered for hte graphs and gets added to the corrosponding series
         int tallyInfectedPeople = 0;
         int tallyHealthyPeople = P_NUM;
         double avgVirusPotency = 1;
@@ -161,10 +161,10 @@ public class Simulation extends JPanel
         virusProperties.addData(seriesVirusPotency,cycleCount,Math.log(avgVirusPotency));
         virusProperties.addData(seriesPersonResistivity,cycleCount,Math.log(avgPersonResistivity));
         repaint();
-        System.out.println(Math.log(avgVirusPotency)/Math.log(avgPersonResistivity));
+
     }
 
-    private void Collide(int i) {
+    private void Collide(int i) {  //this checks if any two people are colliding and then does further checks to see if they infect each other
         for(int j = i+1; j<P_NUM; j++){
                 Person infector = null;
                 Person infectee = null;
@@ -183,7 +183,7 @@ public class Simulation extends JPanel
                         if(infectee.getVirusImmunity() < infector.getVirusPotency()){
                             double infectDecider = ThreadLocalRandom.current().nextDouble(0, 1);
                             if(infectDecider < infectChance) {
-                                infectee.setInfected(infector.getVirusPotency(), virusMutationRate); //infectee is infected with infector's virus
+                                infectee.setInfected(infector.getVirusPotency(), virusMutationRate); //infectee is infected with infector's virus, this propagates the new virus strain
                             }
                         }
                     }
@@ -231,10 +231,7 @@ public class Simulation extends JPanel
         people[i].setXCoordinate(xPos);
         people[i].setYCoordinate(yPos);
 
-        people[i].setLocation((int) xPos, (int) yPos);  //this changes the graphical 'location' with reference to the jPanel
+        people[i].setLocation((int) xPos, (int) yPos);  //this changes the graphical 'location' with reference to the simulation jPanel
     }
-    public void paintComponent(Graphics graphics)
-    {
-        super.paintComponent(graphics);
-    }
+    public void paintComponent(Graphics graphics) { super.paintComponent(graphics); }
 }
